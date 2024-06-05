@@ -7,6 +7,13 @@ using RegistrationApp.Shared.Models;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 using System.Security.Claims;
 using System.Text.Json;
+using static System.Net.Mime.MediaTypeNames;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Formats;
+using SixLabors.ImageSharp.Processing;
+using SixLabors.ImageSharp.PixelFormats;
+using SixLabors.ImageSharp.Formats.Jpeg;
+using Image = SixLabors.ImageSharp.Image; /// --- check
 
 namespace RegistrationApp.Controllers
 {
@@ -17,10 +24,13 @@ namespace RegistrationApp.Controllers
     {
         private readonly IPersonService _personService;
         private readonly IPlaceOfResidenceService _placeOfResidenceService;
-        public PersonInformationController(IPersonService personService, IPlaceOfResidenceService placeOfResidenceService)
+        private readonly IUserService _userService;
+        public PersonInformationController(IPersonService personService, IPlaceOfResidenceService placeOfResidenceService, IUserService userService)
         {
             _personService = personService;
             _placeOfResidenceService = placeOfResidenceService;
+            _userService = userService;
+
         }
 
         [HttpPost("AddPersonInformation")]
@@ -29,19 +39,15 @@ namespace RegistrationApp.Controllers
             try
             {
                 var userId = Guid.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
-                var userRole = HttpContext.User.FindFirst(ClaimTypes.Role).Value;
-                if (userRole != "User")
-                {
-                    return Unauthorized("You are not authorized to perform this action.");
-                }
 
-                // Validate and parse the BirthDate
+
+                // Validate and parse the BirthDate - asking to input string, extra valiation will be added - should it go to services? //Ieally to be in services (services - ateina DTO ir iseina, Repositories - Entities
                 if (!DateOnly.TryParseExact(personDto.BirthDate, "yyyy-MM-dd", out DateOnly birthDate))
                 {
                     return BadRequest("Invalid date format for BirthDate. Please use YYYY-MM-DD.");
                 }
 
-                // Handle file upload
+                // Handle file upload - can it stay in the controller? - Move to services //Could be placed in helper
                 string filePath = null;
                 if (personDto.ProfilePhoto != null)
                 {
@@ -56,6 +62,16 @@ namespace RegistrationApp.Controllers
                     {
                         await personDto.ProfilePhoto.CopyToAsync(stream);
                     }
+
+                    using (var image = Image.Load<Rgba32>(filePath))
+                    {
+                        image.Mutate(x => x.Resize(new ResizeOptions
+                        {
+                            Size = new Size(200, 200),
+                            Mode = ResizeMode.Stretch
+                        }));
+                        image.Save(filePath); // Overwrite the original file
+                    }
                 }
 
                 await _personService.AddPersonInformation(userId, personDto, placeOfResidenceDto, filePath, birthDate);
@@ -68,7 +84,7 @@ namespace RegistrationApp.Controllers
         }
 
         [HttpPut("UpdateName")]
-        public async Task<IActionResult> UpdateName([FromQuery] Guid personId, [FromBody] string newName)
+        public async Task<IActionResult> UpdateName([FromForm] Guid personId, [FromForm] string newName) //what about Trim?
         {
             if (string.IsNullOrWhiteSpace(newName))
             {
@@ -78,12 +94,7 @@ namespace RegistrationApp.Controllers
             try
             {
                 var userId = Guid.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
-                var userRole = HttpContext.User.FindFirst(ClaimTypes.Role).Value;
 
-                if (userRole != "User")
-                {
-                    return Unauthorized("You are not authorized to perform this action.");
-                }
                 await _personService.UpdateName(userId, personId, newName);
                 return Ok("Name updated successfully.");
             }
@@ -93,9 +104,8 @@ namespace RegistrationApp.Controllers
             }
         }
 
-
         [HttpPut("UpdateLastName")]
-        public async Task<IActionResult> UpdateLastName([FromQuery] Guid personId, [FromBody] string newLastName)
+        public async Task<IActionResult> UpdateLastName([FromQuery] Guid personId, [FromQuery] string newLastName)
         {
             if (string.IsNullOrWhiteSpace(newLastName))
             {
@@ -104,17 +114,10 @@ namespace RegistrationApp.Controllers
 
             try
             {
-                //var username = HttpContext.User.FindFirst(ClaimTypes.Name).Value;
                 var userId = Guid.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
-                var userRole = HttpContext.User.FindFirst(ClaimTypes.Role).Value;
 
-                if (userRole != "User")
-                {
-                    return Unauthorized("You are not authorized to perform this action.");
-                }
-                //await _personService.UpdateLastName(username, personId, newLastName);
                 await _personService.UpdateLastName(userId, personId, newLastName);
-                return Ok("Name updated successfully.");
+                return Ok("Last name updated successfully.");
             }
             catch (InvalidOperationException ex)
             {
@@ -123,7 +126,7 @@ namespace RegistrationApp.Controllers
         }
 
         [HttpPut("UpdateGender")]
-        public async Task<IActionResult> UpdateGender([FromQuery] Guid personId, [FromBody] string newGender)
+        public async Task<IActionResult> UpdateGender([FromQuery] Guid personId, [FromQuery] string newGender)
         {
             if (string.IsNullOrWhiteSpace(newGender))
             {
@@ -132,14 +135,8 @@ namespace RegistrationApp.Controllers
 
             try
             {
-                //var username = HttpContext.User.FindFirst(ClaimTypes.Name).Value;
                 var userId = Guid.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
-                var userRole = HttpContext.User.FindFirst(ClaimTypes.Role).Value;
 
-                if (userRole != "User")
-                {
-                    return Unauthorized("You are not authorized to perform this action.");
-                }
                 await _personService.UpdateGender(userId, personId, newGender);
                 return Ok("Gender updated successfully.");
             }
@@ -150,30 +147,15 @@ namespace RegistrationApp.Controllers
         }
 
         [HttpPut("UpdateBirthDate")]
-        public async Task<IActionResult> UpdateBirthDate([FromQuery] Guid personId, [FromBody] DateOnly newBirthDate)
+        public async Task<IActionResult> UpdateBirthDate([FromQuery] Guid personId, [FromQuery] DateOnly newBirthDate)
         {
-            //if (newBirthDate == default)
-            //{
-            //    return BadRequest("BirthDate cannot be the default value.");
-            //}
-
-            //if (newBirthDate > DateTime.FromDateTime(DateTime.Now))
-            //{
-            //    return BadRequest("BirthDate cannot be in the future.");
-            //}
-
             try
             {
-                //var username = HttpContext.User.FindFirst(ClaimTypes.Name).Value;
-                var userId = Guid.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
-                var userRole = HttpContext.User.FindFirst(ClaimTypes.Role).Value;
 
-                if (userRole != "User")
-                {
-                    return Unauthorized("You are not authorized to perform this action.");
-                }
+                var userId = Guid.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
+
                 await _personService.UpdateBirthDate(userId, personId, newBirthDate);
-                return Ok("BirthDate updated successfully.");
+                return Ok("Birth date updated successfully.");
             }
             catch (InvalidOperationException ex)
             {
@@ -182,7 +164,7 @@ namespace RegistrationApp.Controllers
         }
 
         [HttpPut("UpdatePersonalIdNumber")]
-        public async Task<IActionResult> UpdateIdNumber([FromQuery] Guid personId, [FromBody] string newPersonalIdNumber)
+        public async Task<IActionResult> UpdateIdNumber([FromQuery] Guid personId, [FromQuery] string newPersonalIdNumber)
         {
             if (string.IsNullOrWhiteSpace(newPersonalIdNumber))
             {
@@ -191,14 +173,8 @@ namespace RegistrationApp.Controllers
 
             try
             {
-                //var username = HttpContext.User.FindFirst(ClaimTypes.Name).Value;
                 var userId = Guid.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
-                var userRole = HttpContext.User.FindFirst(ClaimTypes.Role).Value;
 
-                if (userRole != "User")
-                {
-                    return Unauthorized("You are not authorized to perform this action.");
-                }
                 await _personService.UpdateIdNumber(userId, personId, newPersonalIdNumber);
                 return Ok("ID number updated successfully.");
             }
@@ -209,7 +185,7 @@ namespace RegistrationApp.Controllers
         }
 
         [HttpPut("UpdatePhoneNumber")]
-        public async Task<IActionResult> UpdatePhoneNumber([FromQuery] Guid personId, [FromBody] string newPhoneNumber)
+        public async Task<IActionResult> UpdatePhoneNumber([FromQuery] Guid personId, [FromQuery] string newPhoneNumber)
         {
             if (string.IsNullOrWhiteSpace(newPhoneNumber))
             {
@@ -218,14 +194,8 @@ namespace RegistrationApp.Controllers
 
             try
             {
-                //var username = HttpContext.User.FindFirst(ClaimTypes.Name).Value;
                 var userId = Guid.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
-                var userRole = HttpContext.User.FindFirst(ClaimTypes.Role).Value;
 
-                if (userRole != "User")
-                {
-                    return Unauthorized("You are not authorized to perform this action.");
-                }
                 await _personService.UpdatePhoneNumber(userId, personId, newPhoneNumber);
                 return Ok("Phone number updated successfully.");
             }
@@ -236,23 +206,17 @@ namespace RegistrationApp.Controllers
         }
 
         [HttpPut("UpdateEmail")]
-        public async Task<IActionResult> UpdateEmail([FromQuery] Guid personId, [FromBody] string newEmail)
+        public async Task<IActionResult> UpdateEmail([FromQuery] Guid personId, [FromQuery] string newEmail)
         {
             if (string.IsNullOrWhiteSpace(newEmail))
             {
-                return BadRequest("Phone number cannot be blank or whitespace.");
+                return BadRequest("Email cannot be blank or whitespace.");
             }
 
             try
             {
-                //var username = HttpContext.User.FindFirst(ClaimTypes.Name).Value;
                 var userId = Guid.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
-                var userRole = HttpContext.User.FindFirst(ClaimTypes.Role).Value;
 
-                if (userRole != "User")
-                {
-                    return Unauthorized("You are not authorized to perform this action.");
-                }
                 await _personService.UpdatePhoneNumber(userId, personId, newEmail);
                 return Ok("Email updated successfully.");
             }
@@ -263,23 +227,18 @@ namespace RegistrationApp.Controllers
         }
 
         [HttpPut("UpdatePhoto")]
-        public async Task<IActionResult> UpdatePhoto([FromQuery] Guid personId, [FromBody] string newFilePath)
+        public async Task<IActionResult> UpdatePhoto([FromQuery] Guid personId, [FromForm] IFormFile newProfilePhoto)
         {
-            if (string.IsNullOrWhiteSpace(newFilePath))
+            if (newProfilePhoto is null)
             {
-                return BadRequest("Phone number cannot be blank or whitespace.");
+                return BadRequest("Photo cannot be empty.");
             }
 
             try
             {
                 var userId = Guid.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
-                var userRole = HttpContext.User.FindFirst(ClaimTypes.Role).Value;
 
-                if (userRole != "User")
-                {
-                    return Unauthorized("You are not authorized to perform this action.");
-                }
-                await _personService.UpdatePhoneNumber(userId, personId, newFilePath); ////check
+                await _personService.UpdatePhoto(userId, personId, newProfilePhoto);
                 return Ok("Photo updated successfully.");
             }
             catch (InvalidOperationException ex)
@@ -289,7 +248,7 @@ namespace RegistrationApp.Controllers
         }
 
         [HttpPut("UpdateCity")]
-        public async Task<IActionResult> UpdateCity([FromQuery] Guid personId, [FromBody] string newCity)
+        public async Task<IActionResult> UpdateCity([FromQuery] Guid personId, [FromQuery] string newCity)
         {
             if (string.IsNullOrWhiteSpace(newCity))
             {
@@ -299,12 +258,7 @@ namespace RegistrationApp.Controllers
             try
             {
                 var userId = Guid.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
-                var userRole = HttpContext.User.FindFirst(ClaimTypes.Role).Value;
 
-                if (userRole != "User")
-                {
-                    return Unauthorized("You are not authorized to perform this action.");
-                }
                 await _placeOfResidenceService.UpdateCity(userId, personId, newCity);
                 return Ok("City updated successfully.");
             }
@@ -319,18 +273,13 @@ namespace RegistrationApp.Controllers
         {
             if (string.IsNullOrWhiteSpace(newStreet))
             {
-                return BadRequest("City cannot be blank or whitespace.");
+                return BadRequest("Street cannot be blank or whitespace.");
             }
 
             try
             {
                 var userId = Guid.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
-                var userRole = HttpContext.User.FindFirst(ClaimTypes.Role).Value;
 
-                if (userRole != "User")
-                {
-                    return Unauthorized("You are not authorized to perform this action.");
-                }
                 await _placeOfResidenceService.UpdateCity(userId, personId, newStreet);
                 return Ok("Street updated successfully.");
             }
@@ -345,18 +294,13 @@ namespace RegistrationApp.Controllers
         {
             if (string.IsNullOrWhiteSpace(newHouseNumbe))
             {
-                return BadRequest("City cannot be blank or whitespace.");
+                return BadRequest("House number cannot be blank or whitespace.");
             }
 
             try
             {
                 var userId = Guid.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
-                var userRole = HttpContext.User.FindFirst(ClaimTypes.Role).Value;
 
-                if (userRole != "User")
-                {
-                    return Unauthorized("You are not authorized to perform this action.");
-                }
                 await _placeOfResidenceService.UpdateCity(userId, personId, newHouseNumbe);
                 return Ok("House number updated successfully.");
             }
@@ -377,12 +321,7 @@ namespace RegistrationApp.Controllers
             try
             {
                 var userId = Guid.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
-                var userRole = HttpContext.User.FindFirst(ClaimTypes.Role).Value;
 
-                if (userRole != "User")
-                {
-                    return Unauthorized("You are not authorized to perform this action.");
-                }
                 await _placeOfResidenceService.UpdateCity(userId, personId, newAppartmentNumber);
                 return Ok("Apartment number updated successfully.");
             }
@@ -390,12 +329,26 @@ namespace RegistrationApp.Controllers
             {
                 return BadRequest(ex.Message);
             }
+
+        }
+
+        [HttpGet("RetrieveAllInformation")]
+        public async Task<IActionResult> RetrievePersonInformation([FromQuery] Guid personId)
+        {
+            try
+            {
+                var userId = Guid.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
+                var personInfo = await _personService.RetrievePersonInformation(userId, personId);
+                return Ok(personInfo);
+            }
+            catch (InvalidCastException ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
 
-        //There must be a different endpoint to update EACH of the Models properties, e.g.Name, ID number, phone number, city(cannot be updated to a blank field or whitespace)
-
-
-
+        //Get Downloadable photo of a person
+        //Get all remaining info (except photo)
     }
 }

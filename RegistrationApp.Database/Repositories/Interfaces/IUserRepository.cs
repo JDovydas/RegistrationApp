@@ -7,6 +7,6 @@ namespace RegistrationApp.Database.Repositories.Interfaces
         Task<User> AddNewUser(User user);
         Task<User> GetUserByUsername(string username);
         Task<User> GetUserById(Guid userId);
-        Task<User> DeleteUser(User user);
+        Task DeleteUser(User user);
     }
 }

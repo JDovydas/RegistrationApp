@@ -6,5 +6,7 @@ namespace RegistrationApp.Database.Repositories.Interfaces
     {
         Task<PlaceOfResidence> AddPlaceOfResidence(PlaceOfResidence placeOfResidence);
         Task<PlaceOfResidence> UpdatePlaceOfResidence(PlaceOfResidence placeOfResidence);
+
+        Task<PlaceOfResidence> GetPlaceOfResidenceByPersonId(Guid personId);
     }
 }

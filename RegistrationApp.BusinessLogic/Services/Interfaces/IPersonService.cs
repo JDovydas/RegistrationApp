@@ -1,4 +1,5 @@
-﻿using RegistrationApp.Shared.DTOs;
+﻿using Microsoft.AspNetCore.Http;
+using RegistrationApp.Shared.DTOs;
 using RegistrationApp.Shared.Models;
 
 
@@ -14,7 +15,9 @@ namespace RegistrationApp.BusinessLogic.Services.Interfaces
         Task UpdateIdNumber(Guid userId, Guid personId, string newPersonalIdNumber);
         Task UpdatePhoneNumber(Guid userId, Guid personId, string newPhoneNumber);
         Task UpdateEmail(Guid userId, Guid personId, string newEmail);
-        Task UpdatePhoto(Guid userId, Guid personId, string newFilePath);
+        Task UpdatePhoto(Guid userId, Guid personId, IFormFile newProfilePhoto);
+        Task DeletePersonById(Guid userId);
+        Task<RetrievePersonInformationDto> RetrievePersonInformation(Guid userId, Guid personId);
 
     }
 }

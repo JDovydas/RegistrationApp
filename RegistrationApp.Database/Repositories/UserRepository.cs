@@ -32,11 +32,9 @@ namespace RegistrationApp.Database.Repositories
             return await _context.Users.Include(p => p.People).FirstOrDefaultAsync(u => u.Id == userId);
         }
 
-        public async Task<User> DeleteUser(User user)
+        public async Task DeleteUser(User user)
         {
             var userToDelete = await _context.Users.FirstOrDefaultAsync(u => u.Id == user.Id);
-            //should I include e.g. public ICollection<Person> People { get; set; } deletion -- Include???
-
             try
             {
                 _context.Users.Remove(userToDelete);
@@ -48,7 +46,6 @@ namespace RegistrationApp.Database.Repositories
                 throw;
             }
             Log.Information($"[{nameof(DeleteUser)}]: Successfully removed User with ID: {user.Id}");
-            return userToDelete;
         }
 
     }

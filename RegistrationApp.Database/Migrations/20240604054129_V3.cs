@@ -6,26 +6,11 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace RegistrationApp.Database.Migrations
 {
     /// <inheritdoc />
-    public partial class v3 : Migration
+    public partial class V3 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.CreateTable(
-                name: "PlacesOfResidence",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    City = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Street = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    HouseNumber = table.Column<int>(type: "int", nullable: false),
-                    AppartmentNumber = table.Column<int>(type: "int", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_PlacesOfResidence", x => x.Id);
-                });
-
             migrationBuilder.CreateTable(
                 name: "Users",
                 columns: table => new
@@ -61,12 +46,6 @@ namespace RegistrationApp.Database.Migrations
                 {
                     table.PrimaryKey("PK_People", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_People_PlacesOfResidence_PlaceOfResidenceId",
-                        column: x => x.PlaceOfResidenceId,
-                        principalTable: "PlacesOfResidence",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
                         name: "FK_People_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
@@ -74,26 +53,48 @@ namespace RegistrationApp.Database.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
-            migrationBuilder.CreateIndex(
-                name: "IX_People_PlaceOfResidenceId",
-                table: "People",
-                column: "PlaceOfResidenceId",
-                unique: true);
+            migrationBuilder.CreateTable(
+                name: "PlacesOfResidence",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    City = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Street = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    HouseNumber = table.Column<int>(type: "int", nullable: false),
+                    AppartmentNumber = table.Column<int>(type: "int", nullable: true),
+                    PersonId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PlacesOfResidence", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_PlacesOfResidence_People_PersonId",
+                        column: x => x.PersonId,
+                        principalTable: "People",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
 
             migrationBuilder.CreateIndex(
                 name: "IX_People_UserId",
                 table: "People",
                 column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PlacesOfResidence_PersonId",
+                table: "PlacesOfResidence",
+                column: "PersonId",
+                unique: true);
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "People");
+                name: "PlacesOfResidence");
 
             migrationBuilder.DropTable(
-                name: "PlacesOfResidence");
+                name: "People");
 
             migrationBuilder.DropTable(
                 name: "Users");

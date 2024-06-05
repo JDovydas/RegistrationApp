@@ -12,8 +12,8 @@ using RegistrationApp.Database;
 namespace RegistrationApp.Database.Migrations
 {
     [DbContext(typeof(RegistrationAppContext))]
-    [Migration("20240531104647_v3")]
-    partial class v3
+    [Migration("20240604054129_V3")]
+    partial class V3
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -70,9 +70,6 @@ namespace RegistrationApp.Database.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("PlaceOfResidenceId")
-                        .IsUnique();
-
                     b.HasIndex("UserId");
 
                     b.ToTable("People");
@@ -94,11 +91,17 @@ namespace RegistrationApp.Database.Migrations
                     b.Property<int>("HouseNumber")
                         .HasColumnType("int");
 
+                    b.Property<Guid>("PersonId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("Street")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("PersonId")
+                        .IsUnique();
 
                     b.ToTable("PlacesOfResidence");
                 });
@@ -132,26 +135,29 @@ namespace RegistrationApp.Database.Migrations
 
             modelBuilder.Entity("RegistrationApp.Shared.Models.Person", b =>
                 {
-                    b.HasOne("RegistrationApp.Shared.Models.PlaceOfResidence", "PlaceOfResidence")
-                        .WithOne("Person")
-                        .HasForeignKey("RegistrationApp.Shared.Models.Person", "PlaceOfResidenceId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("RegistrationApp.Shared.Models.User", "User")
                         .WithMany("People")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("PlaceOfResidence");
-
                     b.Navigation("User");
                 });
 
             modelBuilder.Entity("RegistrationApp.Shared.Models.PlaceOfResidence", b =>
                 {
-                    b.Navigation("Person")
+                    b.HasOne("RegistrationApp.Shared.Models.Person", "Person")
+                        .WithOne("PlaceOfResidence")
+                        .HasForeignKey("RegistrationApp.Shared.Models.PlaceOfResidence", "PersonId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Person");
+                });
+
+            modelBuilder.Entity("RegistrationApp.Shared.Models.Person", b =>
+                {
+                    b.Navigation("PlaceOfResidence")
                         .IsRequired();
                 });
 

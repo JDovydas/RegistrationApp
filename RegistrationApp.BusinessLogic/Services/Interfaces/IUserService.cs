@@ -7,6 +7,6 @@ namespace RegistrationApp.BusinessLogic.Services.Interfaces
         Task<User> CreateUser(string username, string password);
         Task<User> Login(string username, string password);
         Task<User> SignUp(string username, string password);
-        Task<User> DeleteUserById(Guid userId, string userName, string userNameRole);
+        Task DeleteUserById(Guid userId);
     }
 }

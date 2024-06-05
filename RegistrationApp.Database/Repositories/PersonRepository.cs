@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using RegistrationApp.Database.Repositories.Interfaces;
 using RegistrationApp.Shared.Models;
+using Serilog;
 using System;
 
 namespace RegistrationApp.Database.Repositories
@@ -16,37 +17,40 @@ namespace RegistrationApp.Database.Repositories
 
         public async Task<Person> GetPersonById(Guid personId)
         {
-            return await _context.People.FirstOrDefaultAsync(p => p.Id == personId);
-            //return await _context.People.Include(p => p.PlaceOfResidence).FirstOrDefaultAsync(p => p.Id == personId); - could that be used?
-        }
-
-        public async Task<Person> AddPerson(Person person)
-        {
-            await _context.People.AddAsync(person);
-            await _context.SaveChangesAsync();
+            var person = await _context.People.FirstOrDefaultAsync(p => p.Id == personId);
             return person;
         }
 
-        public async Task<Person> UpdatePerson(Person person)
+        public async Task AddPerson(Person person)
         {
-            var existingPerson = await _context.People.FindAsync(person.Id);
-            if (existingPerson == null)
+            await _context.People.AddAsync(person);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task UpdatePerson(Person person)
+        {
+            await _context.People.FindAsync(person.Id);
+            if (person == null)
             {
                 throw new InvalidOperationException("Person not found.");
             }
-            existingPerson.Name = person.Name;
-            existingPerson.LastName = person.LastName;
-            existingPerson.Gender = person.Gender;
-            existingPerson.BirthDate = person.BirthDate;
-            existingPerson.PersonalId = person.PersonalId;
-            existingPerson.PhoneNumber = person.PhoneNumber;
-            existingPerson.Email = person.Email;
-            existingPerson.FilePath = person.FilePath;
-            existingPerson.PlaceOfResidenceId = person.PlaceOfResidenceId;
-            existingPerson.UserId = person.UserId;
-
             await _context.SaveChangesAsync();
-            return existingPerson;
+        }
+
+        public async Task DeletePerson(Person person)
+        {
+            var personToDelete = await _context.People.FirstOrDefaultAsync(p => p.Id == person.Id);
+            try
+            {
+                _context.People.Remove(personToDelete);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                Log.Error($"[{nameof(DeletePerson)}]: {ex.Message}");
+                throw;
+            }
+            Log.Information($"[{nameof(DeletePerson)}]: Successfully removed User with ID: {person.Id}");
 
         }
     }

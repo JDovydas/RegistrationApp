@@ -1,10 +1,12 @@
 ﻿using System;
-using Microsoft.AspNetCore.Http;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace RegistrationApp.Shared.DTOs
 {
-
-    public class PersonDto
+    public class RetrievePersonInformationDto
     {
         public string Name { get; set; }
         public string LastName { get; set; }
@@ -13,6 +15,9 @@ namespace RegistrationApp.Shared.DTOs
         public string PersonalId { get; set; }
         public string PhoneNumber { get; set; }
         public string Email { get; set; }
-        public IFormFile ProfilePhoto { get; set; }
+        public string City { get; set; }
+        public string Street { get; set; }
+        public int HouseNumber { get; set; }
+        public int? AppartmentNumber { get; set; }
     }
 }

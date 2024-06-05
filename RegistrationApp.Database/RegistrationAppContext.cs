@@ -22,6 +22,12 @@ namespace RegistrationApp.Database
                 .WithOne(p => p.User)
                 .HasForeignKey(p => p.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Person>()
+                .HasOne(p => p.PlaceOfResidence)
+                .WithOne(pr => pr.Person)
+                .HasForeignKey<PlaceOfResidence>(pr => pr.PersonId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

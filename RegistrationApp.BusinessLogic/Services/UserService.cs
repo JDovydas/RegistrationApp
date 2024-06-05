@@ -67,18 +67,15 @@ namespace RegistrationApp.BusinessLogic.Services
             return computedHash.SequenceEqual(passwordHash);
         }
 
-        public async Task<User> DeleteUserById(Guid userId, string username, string userRole)
+        public async Task DeleteUserById(Guid userId)
         {
             var userToDelete = await _userRepository.GetUserById(userId);
             if (userToDelete == null)
             {
                 throw new InvalidOperationException("User does not exist.");
             }
-            if (userRole != "Admin")
-            {
-                throw new UnauthorizedAccessException("You are not authorized to perform this action.");
-            }
-            return await _userRepository.DeleteUser(userToDelete);
+
+            await _userRepository.DeleteUser(userToDelete);
         }
     }
 }

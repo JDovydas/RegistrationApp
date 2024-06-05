@@ -1,4 +1,5 @@
-﻿using RegistrationApp.BusinessLogic.Services.Interfaces;
+﻿using Microsoft.AspNetCore.Http;
+using RegistrationApp.BusinessLogic.Services.Interfaces;
 using RegistrationApp.Database.Repositories.Interfaces;
 using RegistrationApp.Shared.DTOs;
 using RegistrationApp.Shared.Models;
@@ -51,40 +52,18 @@ namespace RegistrationApp.BusinessLogic.Services
                 PhoneNumber = personDto.PhoneNumber,
                 Email = personDto.Email,
                 FilePath = filePath,
+                PlaceOfResidenceId = placeOfResidence.Id,
                 UserId = user.Id,
-                PlaceOfResidenceId = placeOfResidence.Id, // Set foreign key
-                PlaceOfResidence = placeOfResidence // Assign the related entity
             };
 
-            //var person = new Person
-            //{
-            //    Id = Guid.NewGuid(),
-            //    Name = personDto.Name,
-            //    LastName = personDto.LastName,
-            //    Gender = personDto.Gender,
-            //    BirthDate = birthDate,
-            //    PersonalId = personDto.PersonalId,
-            //    PhoneNumber = personDto.PhoneNumber,
-            //    Email = personDto.Email,
-            //    FilePath = filePath,
-            //    UserId = user.Id
-            //};
+            await _personRepository.AddPerson(person);
 
-            //var placeOfResidence = new PlaceOfResidence /// Should I move it outsde - to PlaceOfResidenceService?
-            //{
-            //    Id = Guid.NewGuid(),
-            //    City = placeOfResidenceDto.City,
-            //    Street = placeOfResidenceDto.Street,
-            //    HouseNumber = placeOfResidenceDto.HouseNumber,
-            //    AppartmentNumber = placeOfResidenceDto.AppartmentNumber,
-            //    Person = person
-            //};
+            placeOfResidence.PersonId = person.Id;
 
             await _placeOfResidenceRepository.AddPlaceOfResidence(placeOfResidence);
-            await _personRepository.AddPerson(person);
         }
 
-        public async Task UpdateName(Guid userId, Guid personId, string newName) // Should I user just Task instead?
+        public async Task UpdateName(Guid userId, Guid personId, string newName)
         {
             await EnsureUserOwnsPerson(userId, personId); // DOES THIS STOP PROCEEDING WITH THE METHOD FURTHER?
 
@@ -96,10 +75,10 @@ namespace RegistrationApp.BusinessLogic.Services
 
             person.Name = newName;
 
-            await _personRepository.UpdatePerson(person);
+            await _personRepository.UpdatePerson(person);//Should I have the next step or can simply save it?
         }
 
-        public async Task UpdateLastName(Guid userId, Guid personId, string newlastName) // Should I user just Task instead?
+        public async Task UpdateLastName(Guid userId, Guid personId, string newlastName)
         {
             await EnsureUserOwnsPerson(userId, personId);
 
@@ -184,7 +163,7 @@ namespace RegistrationApp.BusinessLogic.Services
             await _personRepository.UpdatePerson(person);
         }
 
-        public async Task UpdatePhoto(Guid userId, Guid personId, string newFilePath)
+        public async Task UpdatePhoto(Guid userId, Guid personId, IFormFile newProfilePhoto)
         {
             await EnsureUserOwnsPerson(userId, personId);
 
@@ -193,7 +172,13 @@ namespace RegistrationApp.BusinessLogic.Services
             {
                 throw new InvalidOperationException("Person not found.");
             }
-            person.FilePath = newFilePath;
+
+            ///Implement Previous photo deletion and the new photo addition
+
+            string filePath = newProfilePhoto.ToString();
+
+
+            person.FilePath = filePath;
 
             await _personRepository.UpdatePerson(person);
         }
@@ -211,5 +196,39 @@ namespace RegistrationApp.BusinessLogic.Services
                 throw new UnauthorizedAccessException("You are not authorized to update this person's information.");
             }
         }
+
+        public async Task DeletePersonById(Guid personId)
+        {
+            var personToDelete = await _personRepository.GetPersonById(personId);
+            await _personRepository.DeletePerson(personToDelete);
+        }
+
+        public async Task<RetrievePersonInformationDto> RetrievePersonInformation(Guid userId, Guid personId)
+        {
+            var person = await _personRepository.GetPersonById(personId);
+            if (person.UserId != userId)
+            {
+                throw new UnauthorizedAccessException("You are not authorized to update this person's information.");
+            }
+            var placeOfResidence = await _placeOfResidenceRepository.GetPlaceOfResidenceByPersonId(personId);
+
+            var fullPersonInformation = new RetrievePersonInformationDto
+            {
+                Name = person.Name,
+                LastName = person.LastName,
+                Gender = person.Gender,
+                BirthDate = person.BirthDate.ToString(),
+                PersonalId = person.PersonalId,
+                PhoneNumber = person.PhoneNumber,
+                Email = person.Email,
+                City = placeOfResidence.City,
+                Street = placeOfResidence.Street,
+                HouseNumber = placeOfResidence.HouseNumber,
+                AppartmentNumber = placeOfResidence.AppartmentNumber,
+            };
+
+            return fullPersonInformation;
+        }
+
     }
 }
