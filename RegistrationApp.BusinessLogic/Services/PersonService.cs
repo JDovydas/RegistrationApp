@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using RegistrationApp.BusinessLogic.Helpers;
 using RegistrationApp.BusinessLogic.Services.Interfaces;
 using RegistrationApp.Database.Repositories.Interfaces;
 using RegistrationApp.Shared.DTOs;
@@ -24,9 +25,9 @@ namespace RegistrationApp.BusinessLogic.Services
             _placeOfResidenceRepository = placeOfResidenceRepository;
         }
 
-        public async Task AddPersonInformation(Guid userId, PersonDto personDto, PlaceOfResidenceDto placeOfResidenceDto, string filePath, DateOnly birthDate)
+        public async Task AddPersonInformationAsync(Guid userId, PersonDto personDto, PlaceOfResidenceDto placeOfResidenceDto, string filePath, DateOnly birthDate)
         {
-            var user = await _userRepository.GetUserById(userId);
+            var user = await _userRepository.GetUserByIdAsync(userId);
             if (user == null)
             {
                 throw new InvalidOperationException("User does not exist");
@@ -56,18 +57,29 @@ namespace RegistrationApp.BusinessLogic.Services
                 UserId = user.Id,
             };
 
-            await _personRepository.AddPerson(person);
+            await _personRepository.AddPersonAsync(person);
 
             placeOfResidence.PersonId = person.Id;
 
-            await _placeOfResidenceRepository.AddPlaceOfResidence(placeOfResidence);
+            await _placeOfResidenceRepository.AddPlaceOfResidenceAsync(placeOfResidence);
         }
 
-        public async Task UpdateName(Guid userId, Guid personId, string newName)
+        public async Task<string> HandleFileUploadAsync(IFormFile profilePhoto)
         {
-            await EnsureUserOwnsPerson(userId, personId); // DOES THIS STOP PROCEEDING WITH THE METHOD FURTHER?
+            return await PersonHelpers.SaveProfilePhotoAsync(profilePhoto);
+        }
 
-            var person = await _personRepository.GetPersonById(personId);
+        public bool ValitateBirthDate(string birthDateString, out DateOnly birthDate)
+        {
+            return PersonHelpers.TryParseBirthDate(birthDateString, out birthDate);
+
+        }
+
+        public async Task UpdateNameAsync(Guid userId, Guid personId, string newName)
+        {
+            await EnsureUserOwnsPersonAsync(userId, personId); // DOES THIS STOP PROCEEDING WITH THE METHOD FURTHER?
+
+            var person = await _personRepository.GetPersonByIdAsync(personId);
             if (person == null)
             {
                 throw new InvalidOperationException("Person not found.");
@@ -75,14 +87,14 @@ namespace RegistrationApp.BusinessLogic.Services
 
             person.Name = newName;
 
-            await _personRepository.UpdatePerson(person);//Should I have the next step or can simply save it?
+            await _personRepository.UpdatePersonAsync(person);//Should I have the next step or can simply save it?
         }
 
-        public async Task UpdateLastName(Guid userId, Guid personId, string newlastName)
+        public async Task UpdateLastNameAsync(Guid userId, Guid personId, string newlastName)
         {
-            await EnsureUserOwnsPerson(userId, personId);
+            await EnsureUserOwnsPersonAsync(userId, personId);
 
-            var person = await _personRepository.GetPersonById(personId);
+            var person = await _personRepository.GetPersonByIdAsync(personId);
             if (person == null)
             {
                 throw new InvalidOperationException("Person not found.");
@@ -90,84 +102,84 @@ namespace RegistrationApp.BusinessLogic.Services
 
             person.LastName = newlastName;
 
-            await _personRepository.UpdatePerson(person);
+            await _personRepository.UpdatePersonAsync(person);
         }
 
-        public async Task UpdateGender(Guid userId, Guid personId, string newGender) // Should I user just Task instead?
+        public async Task UpdateGenderAsync(Guid userId, Guid personId, string newGender) // Should I user just Task instead?
         {
-            await EnsureUserOwnsPerson(userId, personId);
+            await EnsureUserOwnsPersonAsync(userId, personId);
 
-            var person = await _personRepository.GetPersonById(personId);
+            var person = await _personRepository.GetPersonByIdAsync(personId);
             if (person == null)
             {
                 throw new InvalidOperationException("Person not found.");
             }
             person.Gender = newGender;
 
-            await _personRepository.UpdatePerson(person);
+            await _personRepository.UpdatePersonAsync(person);
         }
 
-        public async Task UpdateBirthDate(Guid userId, Guid personId, DateOnly newBirthDate) // Should I user just Task instead?
+        public async Task UpdateBirthDateAsync(Guid userId, Guid personId, DateOnly newBirthDate) // Should I user just Task instead?
         {
-            await EnsureUserOwnsPerson(userId, personId);
+            await EnsureUserOwnsPersonAsync(userId, personId);
 
-            var person = await _personRepository.GetPersonById(personId);
+            var person = await _personRepository.GetPersonByIdAsync(personId);
             if (person == null)
             {
                 throw new InvalidOperationException("Person not found.");
             }
             person.BirthDate = newBirthDate;
 
-            await _personRepository.UpdatePerson(person);
+            await _personRepository.UpdatePersonAsync(person);
         }
 
-        public async Task UpdateIdNumber(Guid userId, Guid personId, string newPersonalId)// Should I user just Task instead?
+        public async Task UpdateIdNumberAsync(Guid userId, Guid personId, string newPersonalId)// Should I user just Task instead?
         {
-            await EnsureUserOwnsPerson(userId, personId);
+            await EnsureUserOwnsPersonAsync(userId, personId);
 
-            var person = await _personRepository.GetPersonById(personId);
+            var person = await _personRepository.GetPersonByIdAsync(personId);
             if (person == null)
             {
                 throw new InvalidOperationException("Person not found.");
             }
             person.PersonalId = newPersonalId;
 
-            await _personRepository.UpdatePerson(person);
+            await _personRepository.UpdatePersonAsync(person);
         }
 
-        public async Task UpdatePhoneNumber(Guid userId, Guid personId, string newPhoneNumber)
+        public async Task UpdatePhoneNumberAsync(Guid userId, Guid personId, string newPhoneNumber)
         {
-            await EnsureUserOwnsPerson(userId, personId);
+            await EnsureUserOwnsPersonAsync(userId, personId);
 
-            var person = await _personRepository.GetPersonById(personId);
+            var person = await _personRepository.GetPersonByIdAsync(personId);
             if (person == null)
             {
                 throw new InvalidOperationException("Person not found.");
             }
             person.PhoneNumber = newPhoneNumber;
 
-            await _personRepository.UpdatePerson(person);
+            await _personRepository.UpdatePersonAsync(person);
         }
 
-        public async Task UpdateEmail(Guid userId, Guid personId, string newEmail)
+        public async Task UpdateEmailAsync(Guid userId, Guid personId, string newEmail)
         {
-            await EnsureUserOwnsPerson(userId, personId);
+            await EnsureUserOwnsPersonAsync(userId, personId);
 
-            var person = await _personRepository.GetPersonById(personId);
+            var person = await _personRepository.GetPersonByIdAsync(personId);
             if (person == null)
             {
                 throw new InvalidOperationException("Person not found.");
             }
             person.Email = newEmail;
 
-            await _personRepository.UpdatePerson(person);
+            await _personRepository.UpdatePersonAsync(person);
         }
 
-        public async Task UpdatePhoto(Guid userId, Guid personId, IFormFile newProfilePhoto)
+        public async Task UpdatePhotoAsync(Guid userId, Guid personId, IFormFile newProfilePhoto)
         {
-            await EnsureUserOwnsPerson(userId, personId);
+            await EnsureUserOwnsPersonAsync(userId, personId);
 
-            var person = await _personRepository.GetPersonById(personId);
+            var person = await _personRepository.GetPersonByIdAsync(personId);
             if (person == null)
             {
                 throw new InvalidOperationException("Person not found.");
@@ -180,12 +192,12 @@ namespace RegistrationApp.BusinessLogic.Services
 
             person.FilePath = filePath;
 
-            await _personRepository.UpdatePerson(person);
+            await _personRepository.UpdatePersonAsync(person);
         }
 
-        public async Task EnsureUserOwnsPerson(Guid userId, Guid personId) /// should it be added to Helpers? Is it OK that Task does not contain a  model in itself?
+        public async Task EnsureUserOwnsPersonAsync(Guid userId, Guid personId) /// should it be added to Helpers? Is it OK that Task does not contain a  model in itself?
         {
-            var person = await _personRepository.GetPersonById(personId);
+            var person = await _personRepository.GetPersonByIdAsync(personId);
             if (person == null)
             {
                 throw new InvalidOperationException("Person not found.");
@@ -197,20 +209,20 @@ namespace RegistrationApp.BusinessLogic.Services
             }
         }
 
-        public async Task DeletePersonById(Guid personId)
+        public async Task DeletePersonByIdAsync(Guid personId)
         {
-            var personToDelete = await _personRepository.GetPersonById(personId);
-            await _personRepository.DeletePerson(personToDelete);
+            var personToDelete = await _personRepository.GetPersonByIdAsync(personId);
+            await _personRepository.DeletePersonAsync(personToDelete);
         }
 
-        public async Task<RetrievePersonInformationDto> RetrievePersonInformation(Guid userId, Guid personId)
+        public async Task<RetrievePersonInformationDto> RetrievePersonInformationAsync(Guid userId, Guid personId)
         {
-            var person = await _personRepository.GetPersonById(personId);
+            var person = await _personRepository.GetPersonByIdAsync(personId);
             if (person.UserId != userId)
             {
                 throw new UnauthorizedAccessException("You are not authorized to update this person's information.");
             }
-            var placeOfResidence = await _placeOfResidenceRepository.GetPlaceOfResidenceByPersonId(personId);
+            var placeOfResidence = await _placeOfResidenceRepository.GetPlaceOfResidenceByPersonIdAsync(personId);
 
             var fullPersonInformation = new RetrievePersonInformationDto
             {

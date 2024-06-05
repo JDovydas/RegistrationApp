@@ -15,19 +15,19 @@ namespace RegistrationApp.Database.Repositories
             _context = context;
         }
 
-        public async Task<Person> GetPersonById(Guid personId)
+        public async Task<Person> GetPersonByIdAsync(Guid personId)
         {
             var person = await _context.People.FirstOrDefaultAsync(p => p.Id == personId);
             return person;
         }
 
-        public async Task AddPerson(Person person)
+        public async Task AddPersonAsync(Person person)
         {
             await _context.People.AddAsync(person);
             await _context.SaveChangesAsync();
         }
 
-        public async Task UpdatePerson(Person person)
+        public async Task UpdatePersonAsync(Person person)
         {
             await _context.People.FindAsync(person.Id);
             if (person == null)
@@ -37,7 +37,7 @@ namespace RegistrationApp.Database.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public async Task DeletePerson(Person person)
+        public async Task DeletePersonAsync(Person person)
         {
             var personToDelete = await _context.People.FirstOrDefaultAsync(p => p.Id == person.Id);
             try
@@ -47,10 +47,10 @@ namespace RegistrationApp.Database.Repositories
             }
             catch (Exception ex)
             {
-                Log.Error($"[{nameof(DeletePerson)}]: {ex.Message}");
+                Log.Error($"[{nameof(DeletePersonAsync)}]: {ex.Message}");
                 throw;
             }
-            Log.Information($"[{nameof(DeletePerson)}]: Successfully removed User with ID: {person.Id}");
+            Log.Information($"[{nameof(DeletePersonAsync)}]: Successfully removed User with ID: {person.Id}");
 
         }
     }

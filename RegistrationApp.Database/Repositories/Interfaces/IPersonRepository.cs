@@ -4,10 +4,10 @@ namespace RegistrationApp.Database.Repositories.Interfaces
 {
     public interface IPersonRepository
     {
-        Task AddPerson(Person person);
-        Task<Person> GetPersonById(Guid personId);
-        Task UpdatePerson(Person person);
-        Task DeletePerson(Person person);
+        Task AddPersonAsync(Person person);
+        Task<Person> GetPersonByIdAsync(Guid personId);
+        Task UpdatePersonAsync(Person person);
+        Task DeletePersonAsync(Person person);
 
     }
 }

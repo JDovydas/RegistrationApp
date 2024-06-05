@@ -15,24 +15,24 @@ namespace RegistrationApp.Database.Repositories
             _context = appContext;
         }
 
-        public async Task<User> AddNewUser(User user)
+        public async Task<User> AddNewUserAsync(User user)
         {
             await _context.Users.AddAsync(user);
             await _context.SaveChangesAsync();
             return user;
         }
 
-        public async Task<User> GetUserByUsername(string username)
+        public async Task<User> GetUserByUsernameAsync(string username)
         {
-            return _context.Users.Where(u => u.Username == username).FirstOrDefault();
+            return await _context.Users.FirstOrDefaultAsync(u => u.Username == username);
         }
 
-        public async Task<User> GetUserById(Guid userId)
+        public async Task<User> GetUserByIdAsync(Guid userId) //Check if People need to be included
         {
             return await _context.Users.Include(p => p.People).FirstOrDefaultAsync(u => u.Id == userId);
         }
 
-        public async Task DeleteUser(User user)
+        public async Task DeleteUserAsync(User user)
         {
             var userToDelete = await _context.Users.FirstOrDefaultAsync(u => u.Id == user.Id);
             try
@@ -42,10 +42,10 @@ namespace RegistrationApp.Database.Repositories
             }
             catch (Exception ex)
             {
-                Log.Error($"[{nameof(DeleteUser)}]: {ex.Message}");
+                Log.Error($"[{nameof(DeleteUserAsync)}]: {ex.Message}");
                 throw;
             }
-            Log.Information($"[{nameof(DeleteUser)}]: Successfully removed User with ID: {user.Id}");
+            Log.Information($"[{nameof(DeleteUserAsync)}]: Successfully removed User with ID: {user.Id}");
         }
 
     }

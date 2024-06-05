@@ -4,9 +4,9 @@ namespace RegistrationApp.Database.Repositories.Interfaces
 {
     public interface IUserRepository
     {
-        Task<User> AddNewUser(User user);
-        Task<User> GetUserByUsername(string username);
-        Task<User> GetUserById(Guid userId);
-        Task DeleteUser(User user);
+        Task<User> AddNewUserAsync(User user);
+        Task<User> GetUserByUsernameAsync(string username);
+        Task<User> GetUserByIdAsync(Guid userId);
+        Task DeleteUserAsync(User user);
     }
 }

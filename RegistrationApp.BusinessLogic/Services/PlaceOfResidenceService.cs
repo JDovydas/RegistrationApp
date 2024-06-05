@@ -22,11 +22,11 @@ namespace RegistrationApp.BusinessLogic.Services
             _personRepository = personRepository;
         }
 
-        public async Task<PlaceOfResidenceDto> UpdateCity(Guid userId, Guid personId, string newCity)
+        public async Task<PlaceOfResidenceDto> UpdateCityAsync(Guid userId, Guid personId, string newCity)
         {
-            await EnsureUserOwnsPerson(userId, personId);
+            await EnsureUserOwnsPersonAsync(userId, personId);
 
-            var person = await _personRepository.GetPersonById(personId);
+            var person = await _personRepository.GetPersonByIdAsync(personId);
             if (person == null)
             {
                 throw new InvalidOperationException("Person not found.");
@@ -40,7 +40,7 @@ namespace RegistrationApp.BusinessLogic.Services
 
             placeOfResidence.City = newCity;
 
-            await _placeOfResidenceRepository.UpdatePlaceOfResidence(placeOfResidence);
+            await _placeOfResidenceRepository.UpdatePlaceOfResidenceAsync(placeOfResidence);
 
             var updatedPlaceOfResidenceDto = new PlaceOfResidenceDto
             {
@@ -53,11 +53,11 @@ namespace RegistrationApp.BusinessLogic.Services
             return updatedPlaceOfResidenceDto;
         }
 
-        public async Task<PlaceOfResidenceDto> UpdateStreet(Guid userId, Guid personId, string newStreet)
+        public async Task<PlaceOfResidenceDto> UpdateStreetAsync(Guid userId, Guid personId, string newStreet)
         {
-            await EnsureUserOwnsPerson(userId, personId);
+            await EnsureUserOwnsPersonAsync(userId, personId);
 
-            var person = await _personRepository.GetPersonById(personId);
+            var person = await _personRepository.GetPersonByIdAsync(personId);
             if (person == null)
             {
                 throw new InvalidOperationException("Person not found.");
@@ -71,7 +71,7 @@ namespace RegistrationApp.BusinessLogic.Services
 
             placeOfResidence.Street = newStreet;
 
-            await _placeOfResidenceRepository.UpdatePlaceOfResidence(placeOfResidence);
+            await _placeOfResidenceRepository.UpdatePlaceOfResidenceAsync(placeOfResidence);
 
             var updatedPlaceOfResidenceDto = new PlaceOfResidenceDto
             {
@@ -84,11 +84,11 @@ namespace RegistrationApp.BusinessLogic.Services
             return updatedPlaceOfResidenceDto;
         }
 
-        public async Task<PlaceOfResidenceDto> UpdateHouseNumber(Guid userId, Guid personId, int newHouseNumber)
+        public async Task<PlaceOfResidenceDto> UpdateHouseNumberAsync(Guid userId, Guid personId, int newHouseNumber)
         {
-            await EnsureUserOwnsPerson(userId, personId);
+            await EnsureUserOwnsPersonAsync(userId, personId);
 
-            var person = await _personRepository.GetPersonById(personId);
+            var person = await _personRepository.GetPersonByIdAsync(personId);
             if (person == null)
             {
                 throw new InvalidOperationException("Person not found.");
@@ -102,7 +102,7 @@ namespace RegistrationApp.BusinessLogic.Services
 
             placeOfResidence.HouseNumber = newHouseNumber;
 
-            await _placeOfResidenceRepository.UpdatePlaceOfResidence(placeOfResidence);
+            await _placeOfResidenceRepository.UpdatePlaceOfResidenceAsync(placeOfResidence);
 
             var updatedPlaceOfResidenceDto = new PlaceOfResidenceDto
             {
@@ -116,11 +116,11 @@ namespace RegistrationApp.BusinessLogic.Services
 
         }
 
-        public async Task<PlaceOfResidenceDto> UpdateAppartmentNumber(Guid userId, Guid personId, int newApparmentNumber)
+        public async Task<PlaceOfResidenceDto> UpdateAppartmentNumberAsync(Guid userId, Guid personId, int newApparmentNumber)
         {
-            await EnsureUserOwnsPerson(userId, personId);
+            await EnsureUserOwnsPersonAsync(userId, personId);
 
-            var person = await _personRepository.GetPersonById(personId);
+            var person = await _personRepository.GetPersonByIdAsync(personId);
             if (person == null)
             {
                 throw new InvalidOperationException("Person not found.");
@@ -134,7 +134,7 @@ namespace RegistrationApp.BusinessLogic.Services
 
             placeOfResidence.AppartmentNumber = newApparmentNumber;
 
-            await _placeOfResidenceRepository.UpdatePlaceOfResidence(placeOfResidence);
+            await _placeOfResidenceRepository.UpdatePlaceOfResidenceAsync(placeOfResidence);
 
             var updatedPlaceOfResidenceDto = new PlaceOfResidenceDto
             {
@@ -147,9 +147,9 @@ namespace RegistrationApp.BusinessLogic.Services
             return updatedPlaceOfResidenceDto;
         }
 
-        public async Task EnsureUserOwnsPerson(Guid userId, Guid personId) /// Duplicate method should it be added to Helpers? Is it OK that Task does not contain a  model in itself?
+        public async Task EnsureUserOwnsPersonAsync(Guid userId, Guid personId) /// Duplicate method should it be added to Helpers? Is it OK that Task does not contain a  model in itself?
         {
-            var person = await _personRepository.GetPersonById(personId);
+            var person = await _personRepository.GetPersonByIdAsync(personId);
             if (person == null)
             {
                 throw new InvalidOperationException("Person not found.");

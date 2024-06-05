@@ -12,18 +12,18 @@ namespace RegistrationApp.BusinessLogic.Services
         {
             _userRepository = userRepository;
         }
-        public async Task<User> SignUp(string username, string password)
+        public async Task<User> SignUpAsync(string username, string password)
         {
-            var existingUser = await _userRepository.GetUserByUsername(username);
+            var existingUser = await _userRepository.GetUserByUsernameAsync(username);
             if (existingUser != null)
             {
                 throw new InvalidOperationException("Such user already exists");
             }
-            var newUser = await CreateUser(username, password);
-            return await _userRepository.AddNewUser(newUser);
+            var newUser = await CreateUserAsync(username, password);
+            return await _userRepository.AddNewUserAsync(newUser);
         }
 
-        public async Task<User> CreateUser(string username, string password)
+        public async Task<User> CreateUserAsync(string username, string password)
         {
             CreatePasswordHash(password, out byte[] passwordHash, out byte[] passwordSalt);
             User newUser = new User
@@ -37,9 +37,9 @@ namespace RegistrationApp.BusinessLogic.Services
             return newUser;
         }
 
-        public async Task<User> Login(string username, string password)
+        public async Task<User> LoginAsync(string username, string password)
         {
-            var user = await _userRepository.GetUserByUsername(username);
+            var user = await _userRepository.GetUserByUsernameAsync(username);
             if (user == null)
             {
                 throw new InvalidOperationException("User does not exist");
@@ -67,15 +67,14 @@ namespace RegistrationApp.BusinessLogic.Services
             return computedHash.SequenceEqual(passwordHash);
         }
 
-        public async Task DeleteUserById(Guid userId)
+        public async Task DeleteUserByIdAsync(Guid userId)
         {
-            var userToDelete = await _userRepository.GetUserById(userId);
+            var userToDelete = await _userRepository.GetUserByIdAsync(userId);
             if (userToDelete == null)
             {
                 throw new InvalidOperationException("User does not exist.");
             }
-
-            await _userRepository.DeleteUser(userToDelete);
+            await _userRepository.DeleteUserAsync(userToDelete);
         }
     }
 }

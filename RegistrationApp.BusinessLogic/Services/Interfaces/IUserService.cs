@@ -4,9 +4,9 @@ namespace RegistrationApp.BusinessLogic.Services.Interfaces
 {
     public interface IUserService
     {
-        Task<User> CreateUser(string username, string password);
-        Task<User> Login(string username, string password);
-        Task<User> SignUp(string username, string password);
-        Task DeleteUserById(Guid userId);
+        Task<User> CreateUserAsync(string username, string password);
+        Task<User> LoginAsync(string username, string password);
+        Task<User> SignUpAsync(string username, string password);
+        Task DeleteUserByIdAsync(Guid userId);
     }
 }

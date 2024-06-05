@@ -21,14 +21,14 @@ namespace RegistrationApp.Database.Repositories
             _context = context;
         }
 
-        public async Task<PlaceOfResidence> AddPlaceOfResidence(PlaceOfResidence placeOfResidence)
+        public async Task<PlaceOfResidence> AddPlaceOfResidenceAsync(PlaceOfResidence placeOfResidence)
         {
             await _context.PlacesOfResidence.AddAsync(placeOfResidence);
             await _context.SaveChangesAsync();
             return placeOfResidence;
         }
 
-        public async Task<PlaceOfResidence> UpdatePlaceOfResidence(PlaceOfResidence placeOfResidence)
+        public async Task<PlaceOfResidence> UpdatePlaceOfResidenceAsync(PlaceOfResidence placeOfResidence)
         {
             var existingplaceOfResidence = await _context.PlacesOfResidence.FindAsync(placeOfResidence.Id);
             if (existingplaceOfResidence == null)
@@ -46,7 +46,7 @@ namespace RegistrationApp.Database.Repositories
             return existingplaceOfResidence;
         }
 
-        public async Task<PlaceOfResidence> GetPlaceOfResidenceByPersonId(Guid personId)
+        public async Task<PlaceOfResidence> GetPlaceOfResidenceByPersonIdAsync(Guid personId)
         {
             var placeOfResidence = await _context.PlacesOfResidence.FirstOrDefaultAsync(p => p.PersonId == personId);
             return placeOfResidence;

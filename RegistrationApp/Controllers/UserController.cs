@@ -25,7 +25,7 @@ namespace RegistrationApp.Controllers
         {
             try
             {
-                var user = await _userService.SignUp(userDto.Username, userDto.Password);
+                var user = await _userService.SignUpAsync(userDto.Username, userDto.Password);
                 return Ok("User created successfully");
             }
 
@@ -40,7 +40,7 @@ namespace RegistrationApp.Controllers
         {
             try
             {
-                var user = await _userService.Login(userDto.Username, userDto.Password);
+                var user = await _userService.LoginAsync(userDto.Username, userDto.Password);
                 var token = _jwtService.GetJwtToken(user.Id.ToString(), user.Username, user.Role);
                 return Ok(new { user, token });
             }

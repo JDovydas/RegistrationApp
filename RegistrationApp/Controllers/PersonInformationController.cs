@@ -2,18 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using RegistrationApp.BusinessLogic.Services.Interfaces;
 using RegistrationApp.Shared.DTOs;
-using RegistrationApp.Database.Repositories.Interfaces;
-using RegistrationApp.Shared.Models;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 using System.Security.Claims;
-using System.Text.Json;
-using static System.Net.Mime.MediaTypeNames;
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.Formats;
-using SixLabors.ImageSharp.Processing;
-using SixLabors.ImageSharp.PixelFormats;
-using SixLabors.ImageSharp.Formats.Jpeg;
-using Image = SixLabors.ImageSharp.Image; /// --- check
 
 namespace RegistrationApp.Controllers
 {
@@ -40,41 +29,18 @@ namespace RegistrationApp.Controllers
             {
                 var userId = Guid.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
 
-
-                // Validate and parse the BirthDate - asking to input string, extra valiation will be added - should it go to services? //Ieally to be in services (services - ateina DTO ir iseina, Repositories - Entities
-                if (!DateOnly.TryParseExact(personDto.BirthDate, "yyyy-MM-dd", out DateOnly birthDate))
+                if (!_personService.ValitateBirthDate(personDto.BirthDate, out DateOnly birthDate))//Moved to helpers
                 {
                     return BadRequest("Invalid date format for BirthDate. Please use YYYY-MM-DD.");
                 }
 
-                // Handle file upload - can it stay in the controller? - Move to services //Could be placed in helper
                 string filePath = null;
                 if (personDto.ProfilePhoto != null)
                 {
-                    var uploads = Path.Combine(Directory.GetCurrentDirectory(), "uploads");
-                    if (!Directory.Exists(uploads))
-                    {
-                        Directory.CreateDirectory(uploads);
-                    }
-
-                    filePath = Path.Combine(uploads, Guid.NewGuid().ToString() + Path.GetExtension(personDto.ProfilePhoto.FileName));
-                    using (var stream = new FileStream(filePath, FileMode.Create))
-                    {
-                        await personDto.ProfilePhoto.CopyToAsync(stream);
-                    }
-
-                    using (var image = Image.Load<Rgba32>(filePath))
-                    {
-                        image.Mutate(x => x.Resize(new ResizeOptions
-                        {
-                            Size = new Size(200, 200),
-                            Mode = ResizeMode.Stretch
-                        }));
-                        image.Save(filePath); // Overwrite the original file
-                    }
+                    filePath = await _personService.HandleFileUploadAsync(personDto.ProfilePhoto); // //Moved to helpers
                 }
 
-                await _personService.AddPersonInformation(userId, personDto, placeOfResidenceDto, filePath, birthDate);
+                await _personService.AddPersonInformationAsync(userId, personDto, placeOfResidenceDto, filePath, birthDate);
                 return Ok("Person information added successfully.");
             }
             catch (InvalidOperationException ex)
@@ -95,7 +61,7 @@ namespace RegistrationApp.Controllers
             {
                 var userId = Guid.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
 
-                await _personService.UpdateName(userId, personId, newName);
+                await _personService.UpdateNameAsync(userId, personId, newName);
                 return Ok("Name updated successfully.");
             }
             catch (InvalidOperationException ex)
@@ -116,7 +82,7 @@ namespace RegistrationApp.Controllers
             {
                 var userId = Guid.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
 
-                await _personService.UpdateLastName(userId, personId, newLastName);
+                await _personService.UpdateLastNameAsync(userId, personId, newLastName);
                 return Ok("Last name updated successfully.");
             }
             catch (InvalidOperationException ex)
@@ -137,7 +103,7 @@ namespace RegistrationApp.Controllers
             {
                 var userId = Guid.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
 
-                await _personService.UpdateGender(userId, personId, newGender);
+                await _personService.UpdateGenderAsync(userId, personId, newGender);
                 return Ok("Gender updated successfully.");
             }
             catch (InvalidOperationException ex)
@@ -154,7 +120,7 @@ namespace RegistrationApp.Controllers
 
                 var userId = Guid.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
 
-                await _personService.UpdateBirthDate(userId, personId, newBirthDate);
+                await _personService.UpdateBirthDateAsync(userId, personId, newBirthDate);
                 return Ok("Birth date updated successfully.");
             }
             catch (InvalidOperationException ex)
@@ -175,7 +141,7 @@ namespace RegistrationApp.Controllers
             {
                 var userId = Guid.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
 
-                await _personService.UpdateIdNumber(userId, personId, newPersonalIdNumber);
+                await _personService.UpdateIdNumberAsync(userId, personId, newPersonalIdNumber);
                 return Ok("ID number updated successfully.");
             }
             catch (InvalidOperationException ex)
@@ -196,7 +162,7 @@ namespace RegistrationApp.Controllers
             {
                 var userId = Guid.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
 
-                await _personService.UpdatePhoneNumber(userId, personId, newPhoneNumber);
+                await _personService.UpdatePhoneNumberAsync(userId, personId, newPhoneNumber);
                 return Ok("Phone number updated successfully.");
             }
             catch (InvalidOperationException ex)
@@ -217,7 +183,7 @@ namespace RegistrationApp.Controllers
             {
                 var userId = Guid.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
 
-                await _personService.UpdatePhoneNumber(userId, personId, newEmail);
+                await _personService.UpdatePhoneNumberAsync(userId, personId, newEmail);
                 return Ok("Email updated successfully.");
             }
             catch (InvalidOperationException ex)
@@ -238,7 +204,7 @@ namespace RegistrationApp.Controllers
             {
                 var userId = Guid.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
 
-                await _personService.UpdatePhoto(userId, personId, newProfilePhoto);
+                await _personService.UpdatePhotoAsync(userId, personId, newProfilePhoto);
                 return Ok("Photo updated successfully.");
             }
             catch (InvalidOperationException ex)
@@ -259,7 +225,7 @@ namespace RegistrationApp.Controllers
             {
                 var userId = Guid.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
 
-                await _placeOfResidenceService.UpdateCity(userId, personId, newCity);
+                await _placeOfResidenceService.UpdateCityAsync(userId, personId, newCity);
                 return Ok("City updated successfully.");
             }
             catch (InvalidOperationException ex)
@@ -280,7 +246,7 @@ namespace RegistrationApp.Controllers
             {
                 var userId = Guid.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
 
-                await _placeOfResidenceService.UpdateCity(userId, personId, newStreet);
+                await _placeOfResidenceService.UpdateStreetAsync(userId, personId, newStreet);
                 return Ok("Street updated successfully.");
             }
             catch (InvalidOperationException ex)
@@ -290,9 +256,9 @@ namespace RegistrationApp.Controllers
         }
 
         [HttpPut("UpdateHouseNumber")]
-        public async Task<IActionResult> UpdateHouseNumber([FromQuery] Guid personId, [FromBody] string newHouseNumbe)
+        public async Task<IActionResult> UpdateHouseNumber([FromQuery] Guid personId, [FromBody] int newHouseNumber)
         {
-            if (string.IsNullOrWhiteSpace(newHouseNumbe))
+            if (newHouseNumber == 0)
             {
                 return BadRequest("House number cannot be blank or whitespace.");
             }
@@ -301,7 +267,7 @@ namespace RegistrationApp.Controllers
             {
                 var userId = Guid.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
 
-                await _placeOfResidenceService.UpdateCity(userId, personId, newHouseNumbe);
+                await _placeOfResidenceService.UpdateHouseNumberAsync(userId, personId, newHouseNumber);
                 return Ok("House number updated successfully.");
             }
             catch (InvalidOperationException ex)
@@ -311,9 +277,9 @@ namespace RegistrationApp.Controllers
         }
 
         [HttpPut("UpdateAppartmentNumber")]
-        public async Task<IActionResult> UpdateAppartmentNumber([FromQuery] Guid personId, [FromBody] string newAppartmentNumber)
+        public async Task<IActionResult> UpdateAppartmentNumber([FromQuery] Guid personId, [FromBody] int newAppartmentNumber)
         {
-            if (string.IsNullOrWhiteSpace(newAppartmentNumber))
+            if (newAppartmentNumber == 0)
             {
                 return BadRequest("Apartment number cannot be blank or whitespace.");
             }
@@ -322,7 +288,7 @@ namespace RegistrationApp.Controllers
             {
                 var userId = Guid.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
 
-                await _placeOfResidenceService.UpdateCity(userId, personId, newAppartmentNumber);
+                await _placeOfResidenceService.UpdateAppartmentNumberAsync(userId, personId, newAppartmentNumber);
                 return Ok("Apartment number updated successfully.");
             }
             catch (InvalidOperationException ex)
@@ -338,7 +304,7 @@ namespace RegistrationApp.Controllers
             try
             {
                 var userId = Guid.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
-                var personInfo = await _personService.RetrievePersonInformation(userId, personId);
+                var personInfo = await _personService.RetrievePersonInformationAsync(userId, personId);
                 return Ok(personInfo);
             }
             catch (InvalidCastException ex)
@@ -347,8 +313,8 @@ namespace RegistrationApp.Controllers
             }
         }
 
+        [HttpGet("RetrievePerson")]
 
         //Get Downloadable photo of a person
-        //Get all remaining info (except photo)
     }
 }

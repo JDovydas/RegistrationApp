@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RegistrationApp.BusinessLogic.Services.Interfaces;
-using System.Security.Claims;
 
 namespace RegistrationApp.Controllers
 {
@@ -21,12 +20,12 @@ namespace RegistrationApp.Controllers
         }
 
         [HttpDelete("DeleteUserById")] /// Move to userControl
-        public async Task<IActionResult> DeleteUser(Guid userId)
+        public async Task<IActionResult> DeleteUserAsync(Guid userId)
         //what should be the error catchings? Is the below enought?
         {
             try
             {
-                await _userService.DeleteUserById(userId);
+                await _userService.DeleteUserByIdAsync(userId);
                 return Ok("User deleted successfully");
 
             }
@@ -37,11 +36,11 @@ namespace RegistrationApp.Controllers
         }
 
         [HttpDelete("DeletePersonById")]
-        public async Task<IActionResult> DeletePerson(Guid personId)
+        public async Task<IActionResult> DeletePersonAsync(Guid personId)
         {
             try
             {
-                await _personService.DeletePersonById(personId);
+                await _personService.DeletePersonByIdAsync(personId);
                 return Ok("Person deleted successfully");
             }
             catch (InvalidOperationException ex)
