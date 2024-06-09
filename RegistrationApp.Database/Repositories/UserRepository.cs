@@ -35,6 +35,11 @@ namespace RegistrationApp.Database.Repositories
         public async Task DeleteUserAsync(User user)
         {
             var userToDelete = await _context.Users.FirstOrDefaultAsync(u => u.Id == user.Id);
+            if (userToDelete == null)
+            {
+                throw new InvalidOperationException("User not found.");
+            }
+
             try
             {
                 _context.Users.Remove(userToDelete);

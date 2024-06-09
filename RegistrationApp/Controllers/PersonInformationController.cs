@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.FileProviders;
 using RegistrationApp.BusinessLogic.Services.Interfaces;
 using RegistrationApp.Shared.DTOs;
 using System.Security.Claims;
@@ -22,9 +23,15 @@ namespace RegistrationApp.Controllers
 
         }
 
+        [Authorize(Roles = "User")]
         [HttpPost("AddPersonInformation")]
         public async Task<IActionResult> AddPersonInformation([FromForm] PersonDto personDto, [FromForm] PlaceOfResidenceDto placeOfResidenceDto)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             try
             {
                 var userId = Guid.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
@@ -37,7 +44,7 @@ namespace RegistrationApp.Controllers
                 string filePath = null;
                 if (personDto.ProfilePhoto != null)
                 {
-                    filePath = await _personService.HandleFileUploadAsync(personDto.ProfilePhoto); // //Moved to helpers
+                    filePath = await _personService.ProfilePhotoUploadAsync(personDto.ProfilePhoto); // //Moved to helpers
                 }
 
                 await _personService.AddPersonInformationAsync(userId, personDto, placeOfResidenceDto, filePath, birthDate);
@@ -49,12 +56,13 @@ namespace RegistrationApp.Controllers
             }
         }
 
+        [Authorize(Roles = "User")]
         [HttpPut("UpdateName")]
         public async Task<IActionResult> UpdateName([FromForm] Guid personId, [FromForm] string newName) //what about Trim?
         {
-            if (string.IsNullOrWhiteSpace(newName))
+            if (!ModelState.IsValid)
             {
-                return BadRequest("Name cannot be blank or whitespace.");
+                return BadRequest(ModelState);
             }
 
             try
@@ -70,12 +78,13 @@ namespace RegistrationApp.Controllers
             }
         }
 
+        [Authorize(Roles = "User")]
         [HttpPut("UpdateLastName")]
         public async Task<IActionResult> UpdateLastName([FromQuery] Guid personId, [FromQuery] string newLastName)
         {
-            if (string.IsNullOrWhiteSpace(newLastName))
+            if (!ModelState.IsValid)
             {
-                return BadRequest("Name cannot be blank or whitespace.");
+                return BadRequest(ModelState);
             }
 
             try
@@ -91,12 +100,13 @@ namespace RegistrationApp.Controllers
             }
         }
 
+        [Authorize(Roles = "User")]
         [HttpPut("UpdateGender")]
         public async Task<IActionResult> UpdateGender([FromQuery] Guid personId, [FromQuery] string newGender)
         {
-            if (string.IsNullOrWhiteSpace(newGender))
+            if (!ModelState.IsValid)
             {
-                return BadRequest("Name cannot be blank or whitespace.");
+                return BadRequest(ModelState);
             }
 
             try
@@ -112,12 +122,17 @@ namespace RegistrationApp.Controllers
             }
         }
 
+        [Authorize(Roles = "User")]
         [HttpPut("UpdateBirthDate")]
         public async Task<IActionResult> UpdateBirthDate([FromQuery] Guid personId, [FromQuery] DateOnly newBirthDate)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             try
             {
-
                 var userId = Guid.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
 
                 await _personService.UpdateBirthDateAsync(userId, personId, newBirthDate);
@@ -129,12 +144,13 @@ namespace RegistrationApp.Controllers
             }
         }
 
+        [Authorize(Roles = "User")]
         [HttpPut("UpdatePersonalIdNumber")]
         public async Task<IActionResult> UpdateIdNumber([FromQuery] Guid personId, [FromQuery] string newPersonalIdNumber)
         {
-            if (string.IsNullOrWhiteSpace(newPersonalIdNumber))
+            if (!ModelState.IsValid)
             {
-                return BadRequest("ID number cannot be blank or whitespace.");
+                return BadRequest(ModelState);
             }
 
             try
@@ -150,12 +166,13 @@ namespace RegistrationApp.Controllers
             }
         }
 
+        [Authorize(Roles = "User")]
         [HttpPut("UpdatePhoneNumber")]
         public async Task<IActionResult> UpdatePhoneNumber([FromQuery] Guid personId, [FromQuery] string newPhoneNumber)
         {
-            if (string.IsNullOrWhiteSpace(newPhoneNumber))
+            if (!ModelState.IsValid)
             {
-                return BadRequest("Phone number cannot be blank or whitespace.");
+                return BadRequest(ModelState);
             }
 
             try
@@ -171,12 +188,13 @@ namespace RegistrationApp.Controllers
             }
         }
 
+        [Authorize(Roles = "User")]
         [HttpPut("UpdateEmail")]
         public async Task<IActionResult> UpdateEmail([FromQuery] Guid personId, [FromQuery] string newEmail)
         {
-            if (string.IsNullOrWhiteSpace(newEmail))
+            if (!ModelState.IsValid)
             {
-                return BadRequest("Email cannot be blank or whitespace.");
+                return BadRequest(ModelState);
             }
 
             try
@@ -192,12 +210,13 @@ namespace RegistrationApp.Controllers
             }
         }
 
+        [Authorize(Roles = "User")]
         [HttpPut("UpdatePhoto")]
         public async Task<IActionResult> UpdatePhoto([FromQuery] Guid personId, [FromForm] IFormFile newProfilePhoto)
         {
-            if (newProfilePhoto is null)
+            if (!ModelState.IsValid)
             {
-                return BadRequest("Photo cannot be empty.");
+                return BadRequest(ModelState);
             }
 
             try
@@ -213,12 +232,13 @@ namespace RegistrationApp.Controllers
             }
         }
 
+        [Authorize(Roles = "User")]
         [HttpPut("UpdateCity")]
         public async Task<IActionResult> UpdateCity([FromQuery] Guid personId, [FromQuery] string newCity)
         {
-            if (string.IsNullOrWhiteSpace(newCity))
+            if (!ModelState.IsValid)
             {
-                return BadRequest("City cannot be blank or whitespace.");
+                return BadRequest(ModelState);
             }
 
             try
@@ -234,12 +254,13 @@ namespace RegistrationApp.Controllers
             }
         }
 
+        [Authorize(Roles = "User")]
         [HttpPut("UpdateStreet")]
         public async Task<IActionResult> UpdateStreet([FromQuery] Guid personId, [FromBody] string newStreet)
         {
-            if (string.IsNullOrWhiteSpace(newStreet))
+            if (!ModelState.IsValid)
             {
-                return BadRequest("Street cannot be blank or whitespace.");
+                return BadRequest(ModelState);
             }
 
             try
@@ -255,12 +276,13 @@ namespace RegistrationApp.Controllers
             }
         }
 
+        [Authorize(Roles = "User")]
         [HttpPut("UpdateHouseNumber")]
         public async Task<IActionResult> UpdateHouseNumber([FromQuery] Guid personId, [FromBody] int newHouseNumber)
         {
-            if (newHouseNumber == 0)
+            if (!ModelState.IsValid)
             {
-                return BadRequest("House number cannot be blank or whitespace.");
+                return BadRequest(ModelState);
             }
 
             try
@@ -276,12 +298,13 @@ namespace RegistrationApp.Controllers
             }
         }
 
+        [Authorize(Roles = "User")]
         [HttpPut("UpdateAppartmentNumber")]
         public async Task<IActionResult> UpdateAppartmentNumber([FromQuery] Guid personId, [FromBody] int newAppartmentNumber)
         {
-            if (newAppartmentNumber == 0)
+            if (!ModelState.IsValid)
             {
-                return BadRequest("Apartment number cannot be blank or whitespace.");
+                return BadRequest(ModelState);
             }
 
             try
@@ -298,6 +321,7 @@ namespace RegistrationApp.Controllers
 
         }
 
+        [Authorize(Roles = "User")]
         [HttpGet("RetrieveAllInformation")]
         public async Task<IActionResult> RetrievePersonInformation([FromQuery] Guid personId)
         {
@@ -313,8 +337,39 @@ namespace RegistrationApp.Controllers
             }
         }
 
-        [HttpGet("RetrievePerson")]
+        [Authorize(Roles = "User")]
+        [HttpGet("RetrievePersonProfilePhoto")]
+        public async Task<IActionResult> RetrievePersonProfilePhoto([FromQuery] Guid personId)
+        {
+            try
+            {
+                var userId = Guid.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
+                var personProfilePhoto = await _personService.RetrievePersonProfilePhotoAsync(userId, personId);
+                return personProfilePhoto;
+            }
+            catch (InvalidCastException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
 
-        //Get Downloadable photo of a person
+        [Authorize(Roles = "Admin")]
+        [HttpDelete("DeletePersonById")]
+        public async Task<IActionResult> DeletePersonAsync(Guid personId)
+        {
+            try
+            {
+                await _personService.DeletePersonByIdAsync(personId);
+                return Ok("Person deleted successfully");
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
+        }
     }
 }
+
+
+

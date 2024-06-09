@@ -23,6 +23,11 @@ namespace RegistrationApp.Controllers
         [HttpPost("SignUp")]
         public async Task<IActionResult> SignUp([FromForm] UserDto userDto) //Should I implement password entry, which would be shown twice?
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             try
             {
                 var user = await _userService.SignUpAsync(userDto.Username, userDto.Password);
@@ -48,6 +53,23 @@ namespace RegistrationApp.Controllers
             catch (InvalidOperationException ex)
             {
                 return Unauthorized(ex.Message);
+            }
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpDelete("DeleteUserById")] /// Move to userControl
+        public async Task<IActionResult> DeleteUserAsync(Guid userId)
+        //what should be the error catchings? Is the below enought?
+        {
+            try
+            {
+                await _userService.DeleteUserByIdAsync(userId);
+                return Ok("User deleted successfully");
+
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(ex.Message);
             }
         }
     }

@@ -6,6 +6,10 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
+using FluentValidation.AspNetCore;
+using RegistrationApp.Shared.Validators;
+using RegistrationApp.Database.Validators;
+using FluentValidation;
 
 namespace RegistrationApp
 {
@@ -64,6 +68,15 @@ namespace RegistrationApp
             // Add services to the container.
 
             builder.Services.AddControllers();
+
+            // Register FluentValidation
+            builder.Services.AddFluentValidationAutoValidation()
+                            .AddFluentValidationClientsideAdapters()
+                            .AddValidatorsFromAssemblyContaining<PersonDtoValidator>()
+                            .AddValidatorsFromAssemblyContaining<PlaceOfResidenceDtoValidator>()
+                            .AddValidatorsFromAssemblyContaining<UserDtoValidator>();
+
+
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();

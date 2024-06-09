@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using RegistrationApp.Shared.DTOs;
 using RegistrationApp.Shared.Models;
 
@@ -19,7 +20,7 @@ namespace RegistrationApp.BusinessLogic.Services.Interfaces
         Task DeletePersonByIdAsync(Guid userId);
         Task<RetrievePersonInformationDto> RetrievePersonInformationAsync(Guid userId, Guid personId);
         bool ValitateBirthDate(string birthDateString, out DateOnly birthDate);
-        Task<string> HandleFileUploadAsync(IFormFile profilePhoto);
-
+        Task<string> ProfilePhotoUploadAsync(IFormFile profilePhoto);
+        Task<FileContentResult> RetrievePersonProfilePhotoAsync(Guid userId, Guid personId);
     }
 }

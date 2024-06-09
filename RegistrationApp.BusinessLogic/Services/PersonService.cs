@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using RegistrationApp.BusinessLogic.Helpers;
 using RegistrationApp.BusinessLogic.Services.Interfaces;
 using RegistrationApp.Database.Repositories.Interfaces;
@@ -64,14 +65,14 @@ namespace RegistrationApp.BusinessLogic.Services
             await _placeOfResidenceRepository.AddPlaceOfResidenceAsync(placeOfResidence);
         }
 
-        public async Task<string> HandleFileUploadAsync(IFormFile profilePhoto)
+        public async Task<string> ProfilePhotoUploadAsync(IFormFile profilePhoto)
         {
-            return await PersonHelpers.SaveProfilePhotoAsync(profilePhoto);
+            return await ProfilePhotoHelpers.SaveProfilePhotoAsync(profilePhoto);
         }
 
         public bool ValitateBirthDate(string birthDateString, out DateOnly birthDate)
         {
-            return PersonHelpers.TryParseBirthDate(birthDateString, out birthDate);
+            return PersonInformationHelpers.TryParseBirthDate(birthDateString, out birthDate);
 
         }
 
@@ -185,34 +186,37 @@ namespace RegistrationApp.BusinessLogic.Services
                 throw new InvalidOperationException("Person not found.");
             }
 
-            ///Implement Previous photo deletion and the new photo addition
+            // Delete the old photo if it exists
+            if (!string.IsNullOrEmpty(person.FilePath))
+            {
+                ProfilePhotoHelpers.DeleteProfilePhoto(person.FilePath);
+            }
 
-            string filePath = newProfilePhoto.ToString();
-
-
+            // Save the new photo
+            var filePath = await ProfilePhotoHelpers.SaveProfilePhotoAsync(newProfilePhoto);
             person.FilePath = filePath;
 
             await _personRepository.UpdatePersonAsync(person);
         }
 
-        public async Task EnsureUserOwnsPersonAsync(Guid userId, Guid personId) /// should it be added to Helpers? Is it OK that Task does not contain a  model in itself?
-        {
-            var person = await _personRepository.GetPersonByIdAsync(personId);
-            if (person == null)
-            {
-                throw new InvalidOperationException("Person not found.");
-            }
-
-            if (person.UserId != userId)
-            {
-                throw new UnauthorizedAccessException("You are not authorized to update this person's information.");
-            }
-        }
 
         public async Task DeletePersonByIdAsync(Guid personId)
         {
             var personToDelete = await _personRepository.GetPersonByIdAsync(personId);
+
+            if (personToDelete == null)
+            {
+                throw new InvalidOperationException("Person not found.");
+            }
+
+            // Delete the photo if it exists
+            if (!string.IsNullOrEmpty(personToDelete.FilePath))
+            {
+                ProfilePhotoHelpers.DeleteProfilePhoto(personToDelete.FilePath);
+            }
             await _personRepository.DeletePersonAsync(personToDelete);
+
+
         }
 
         public async Task<RetrievePersonInformationDto> RetrievePersonInformationAsync(Guid userId, Guid personId)
@@ -240,6 +244,33 @@ namespace RegistrationApp.BusinessLogic.Services
             };
 
             return fullPersonInformation;
+        }
+
+        public async Task<FileContentResult> RetrievePersonProfilePhotoAsync(Guid userId, Guid personId)
+        {
+            var person = await _personRepository.GetPersonByIdAsync(personId);
+            if (person.UserId != userId)
+            {
+                throw new UnauthorizedAccessException("You are not authorized to access this person's information.");
+            }
+
+            var filePath = person.FilePath;
+            return await ProfilePhotoHelpers.GetProfilePhotoAsync(filePath);
+
+        }
+
+        public async Task EnsureUserOwnsPersonAsync(Guid userId, Guid personId) /// should it be added to Helpers? Is it OK that Task does not contain a  model in itself?
+        {
+            var person = await _personRepository.GetPersonByIdAsync(personId);
+            if (person == null)
+            {
+                throw new InvalidOperationException("Person not found.");
+            }
+
+            if (person.UserId != userId)
+            {
+                throw new UnauthorizedAccessException("You are not authorized to update this person's information.");
+            }
         }
 
     }

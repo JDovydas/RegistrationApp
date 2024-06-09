@@ -10,7 +10,7 @@ using RegistrationApp.Database.Repositories;
 
 namespace RegistrationApp.BusinessLogic.Services
 {
-    internal class PlaceOfResidenceService : IPlaceOfResidenceService
+    public class PlaceOfResidenceService : IPlaceOfResidenceService
     {
         private readonly IPlaceOfResidenceRepository _placeOfResidenceRepository;
         private readonly IPersonRepository _personRepository;
@@ -22,7 +22,8 @@ namespace RegistrationApp.BusinessLogic.Services
             _personRepository = personRepository;
         }
 
-        public async Task<PlaceOfResidenceDto> UpdateCityAsync(Guid userId, Guid personId, string newCity)
+        public async Task UpdateCityAsync(Guid userId, Guid personId, string newCity)
+        //public async Task<PlaceOfResidenceDto> UpdateCityAsync(Guid userId, Guid personId, string newCity)
         {
             await EnsureUserOwnsPersonAsync(userId, personId);
 
@@ -42,18 +43,19 @@ namespace RegistrationApp.BusinessLogic.Services
 
             await _placeOfResidenceRepository.UpdatePlaceOfResidenceAsync(placeOfResidence);
 
-            var updatedPlaceOfResidenceDto = new PlaceOfResidenceDto
-            {
-                City = placeOfResidence.City,
-                Street = placeOfResidence.Street,
-                HouseNumber = placeOfResidence.HouseNumber,
-                AppartmentNumber = placeOfResidence.AppartmentNumber
-            };
+            //var updatedPlaceOfResidenceDto = new PlaceOfResidenceDto
+            //{
+            //    City = placeOfResidence.City,
+            //    Street = placeOfResidence.Street,
+            //    HouseNumber = placeOfResidence.HouseNumber,
+            //    AppartmentNumber = placeOfResidence.AppartmentNumber
+            //};
 
-            return updatedPlaceOfResidenceDto;
+            //return updatedPlaceOfResidenceDto;
         }
 
-        public async Task<PlaceOfResidenceDto> UpdateStreetAsync(Guid userId, Guid personId, string newStreet)
+        public async Task UpdateStreetAsync(Guid userId, Guid personId, string newStreet)
+        //public async Task<PlaceOfResidenceDto> UpdateStreetAsync(Guid userId, Guid personId, string newStreet)
         {
             await EnsureUserOwnsPersonAsync(userId, personId);
 
@@ -73,18 +75,19 @@ namespace RegistrationApp.BusinessLogic.Services
 
             await _placeOfResidenceRepository.UpdatePlaceOfResidenceAsync(placeOfResidence);
 
-            var updatedPlaceOfResidenceDto = new PlaceOfResidenceDto
-            {
-                City = placeOfResidence.City,
-                Street = placeOfResidence.Street,
-                HouseNumber = placeOfResidence.HouseNumber,
-                AppartmentNumber = placeOfResidence.AppartmentNumber
-            };
+            //var updatedPlaceOfResidenceDto = new PlaceOfResidenceDto
+            //{
+            //    City = placeOfResidence.City,
+            //    Street = placeOfResidence.Street,
+            //    HouseNumber = placeOfResidence.HouseNumber,
+            //    AppartmentNumber = placeOfResidence.AppartmentNumber
+            //};
 
-            return updatedPlaceOfResidenceDto;
+            //return updatedPlaceOfResidenceDto;
         }
 
-        public async Task<PlaceOfResidenceDto> UpdateHouseNumberAsync(Guid userId, Guid personId, int newHouseNumber)
+        public async Task UpdateHouseNumberAsync(Guid userId, Guid personId, int newHouseNumber)
+        //public async Task<PlaceOfResidenceDto> UpdateHouseNumberAsync(Guid userId, Guid personId, int newHouseNumber)
         {
             await EnsureUserOwnsPersonAsync(userId, personId);
 
@@ -104,19 +107,20 @@ namespace RegistrationApp.BusinessLogic.Services
 
             await _placeOfResidenceRepository.UpdatePlaceOfResidenceAsync(placeOfResidence);
 
-            var updatedPlaceOfResidenceDto = new PlaceOfResidenceDto
-            {
-                City = placeOfResidence.City,
-                Street = placeOfResidence.Street,
-                HouseNumber = placeOfResidence.HouseNumber,
-                AppartmentNumber = placeOfResidence.AppartmentNumber
-            };
+            //var updatedPlaceOfResidenceDto = new PlaceOfResidenceDto
+            //{
+            //    City = placeOfResidence.City,
+            //    Street = placeOfResidence.Street,
+            //    HouseNumber = placeOfResidence.HouseNumber,
+            //    AppartmentNumber = placeOfResidence.AppartmentNumber
+            //};
 
-            return updatedPlaceOfResidenceDto;
+            //return updatedPlaceOfResidenceDto;
 
         }
 
-        public async Task<PlaceOfResidenceDto> UpdateAppartmentNumberAsync(Guid userId, Guid personId, int newApparmentNumber)
+        public async Task UpdateAppartmentNumberAsync(Guid userId, Guid personId, int newApparmentNumber)
+        //public async Task<PlaceOfResidenceDto> UpdateAppartmentNumberAsync(Guid userId, Guid personId, int newApparmentNumber)
         {
             await EnsureUserOwnsPersonAsync(userId, personId);
 
@@ -136,15 +140,15 @@ namespace RegistrationApp.BusinessLogic.Services
 
             await _placeOfResidenceRepository.UpdatePlaceOfResidenceAsync(placeOfResidence);
 
-            var updatedPlaceOfResidenceDto = new PlaceOfResidenceDto
-            {
-                City = placeOfResidence.City,
-                Street = placeOfResidence.Street,
-                HouseNumber = placeOfResidence.HouseNumber,
-                AppartmentNumber = placeOfResidence.AppartmentNumber
-            };
+            //var updatedPlaceOfResidenceDto = new PlaceOfResidenceDto
+            //{
+            //    City = placeOfResidence.City,
+            //    Street = placeOfResidence.Street,
+            //    HouseNumber = placeOfResidence.HouseNumber,
+            //    AppartmentNumber = placeOfResidence.AppartmentNumber
+            //};
 
-            return updatedPlaceOfResidenceDto;
+            //return updatedPlaceOfResidenceDto;
         }
 
         public async Task EnsureUserOwnsPersonAsync(Guid userId, Guid personId) /// Duplicate method should it be added to Helpers? Is it OK that Task does not contain a  model in itself?

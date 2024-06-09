@@ -1,4 +1,6 @@
-﻿using RegistrationApp.BusinessLogic.Services.Interfaces;
+﻿using RegistrationApp.BusinessLogic.Helpers;
+using RegistrationApp.BusinessLogic.Services.Interfaces;
+using RegistrationApp.Database.Repositories;
 using RegistrationApp.Database.Repositories.Interfaces;
 using RegistrationApp.Shared.Models;
 using System.Security.Cryptography;
@@ -73,6 +75,19 @@ namespace RegistrationApp.BusinessLogic.Services
             if (userToDelete == null)
             {
                 throw new InvalidOperationException("User does not exist.");
+            }
+
+            // Check if user has any people added, if so, delete the ProfilePhotos  collection is not null and contains any people
+            if (userToDelete.People != null)
+            {
+                // Delete associated persons and their photos
+                foreach (var person in userToDelete.People)
+                {
+                    if (!string.IsNullOrEmpty(person.FilePath))
+                    {
+                        ProfilePhotoHelpers.DeleteProfilePhoto(person.FilePath);
+                    }
+                }
             }
             await _userRepository.DeleteUserAsync(userToDelete);
         }
