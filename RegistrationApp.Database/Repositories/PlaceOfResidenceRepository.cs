@@ -58,13 +58,11 @@ namespace RegistrationApp.Database.Repositories
             }
             _context.Update(placeOfResidence);
             await _context.SaveChangesAsync();
-
         }
 
         public async Task<PlaceOfResidence> GetPlaceOfResidenceByPersonIdAsync(Guid personId)
         {
-            var placeOfResidence = await _context.PlacesOfResidence.FirstOrDefaultAsync(p => p.PersonId == personId);
-            return placeOfResidence;
+            return await _context.PlacesOfResidence.FirstOrDefaultAsync(p => p.PersonId == personId);
         }
 
 

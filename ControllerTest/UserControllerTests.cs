@@ -12,10 +12,10 @@ namespace ControllerTest
         // Mock objects for IUserService and IJwtService interfaces
         private readonly Mock<IUserService> _userServiceMock;
         private readonly Mock<IJwtService> _jwtServiceMock;
-        // Instance of the UserController class which will be tested
+        // Instance of UserController class which will be tested
         private readonly UserController _controller;
 
-        // Constructor to set up mocks and the controller instance for the tests
+        // Constructor to set up mocks and controller instance for tests
         public UserControllerTests()
         {
             _userServiceMock = new Mock<IUserService>();
@@ -33,7 +33,7 @@ namespace ControllerTest
                 Password = "Password123!"
             };
 
-            // Mocking the SignUpAsync method to return a new User object
+            // Mocking the SignUpAsync method to return new User object
             _userServiceMock.Setup(service => service.SignUpAsync(userDto.Username, userDto.Password)).ReturnsAsync(new User { Username = userDto.Username });
 
             // Act
@@ -50,7 +50,7 @@ namespace ControllerTest
             // Arrange
             var userId = Guid.NewGuid();
 
-            // Mocking the DeleteUserByIdAsync method to complete successfully
+            // Mocking DeleteUserByIdAsync method to complete successfully
             _userServiceMock.Setup(service => service.DeleteUserByIdAsync(userId)).Returns(Task.CompletedTask);
 
             // Act
@@ -67,7 +67,7 @@ namespace ControllerTest
             // Arrange
             var userId = Guid.NewGuid();
 
-            // Mocking the DeleteUserByIdAsync method to throw an InvalidOperationException
+            // Mocking DeleteUserByIdAsync method to throw InvalidOperationException
             _userServiceMock.Setup(service => service.DeleteUserByIdAsync(userId)).ThrowsAsync(new InvalidOperationException("User not found."));
 
             // Act

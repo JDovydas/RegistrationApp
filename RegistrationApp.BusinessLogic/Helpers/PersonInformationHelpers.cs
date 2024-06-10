@@ -10,7 +10,6 @@ namespace RegistrationApp.BusinessLogic.Helpers
             return DateOnly.TryParseExact(birthDateString, "yyyy-MM-dd", out birthDate);
         }
 
-
         // Ensure the user owns the person
         public static async Task EnsureUserOwnsPersonAsync(IPersonRepository personRepository, Guid userId, Guid personId)
         {

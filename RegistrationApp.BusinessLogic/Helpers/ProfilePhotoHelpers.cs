@@ -24,7 +24,7 @@ namespace RegistrationApp.BusinessLogic.Helpers
                 await profilePhoto.CopyToAsync(stream); // Copy profile photo to the file stream.
             }
 
-            // Load saved profile photo using ImageSharp.
+            // Load saved profile photo using ImageSharp library.
             using (var image = await Image.LoadAsync<Rgba32>(filePath))
             {
                 image.Mutate(x => x.Resize(new ResizeOptions
@@ -38,7 +38,7 @@ namespace RegistrationApp.BusinessLogic.Helpers
             return filePath;
         }
 
-        //FileContentResult: return type used in ASP.NET Core to represent a file being returned in HTTP response.
+
         public static async Task<FileContentResult> GetProfilePhotoAsync(string filePath)
         {
             if (string.IsNullOrEmpty(filePath) || !System.IO.File.Exists(filePath)) //Checks if file exists at the specified filePath.
@@ -50,7 +50,7 @@ namespace RegistrationApp.BusinessLogic.Helpers
             byte[] fileBytes = await System.IO.File.ReadAllBytesAsync(filePath); //reads all bytes from file at specified filePath.
 
             //Creates new instance of FileContentResult with byte array(fileBytes) and type ("image/jpeg").
-            //FileContentResult is used to return a file as the response content, which can then be used to send the file data in an HTTP response.
+            //FileContentResult used to return a file as the response content, which can then be used to send file data in HTTP response
             return new FileContentResult(fileBytes, "image/jpeg");
         }
 

@@ -1,4 +1,3 @@
-using RegistrationApp.Database;
 using RegistrationApp.Database.Extensions;
 using RegistrationApp.BusinessLogic.Extensions;
 using Microsoft.EntityFrameworkCore;

@@ -1,8 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using RegistrationApp.Shared.DTOs;
-using RegistrationApp.Shared.Models;
-
 
 namespace RegistrationApp.BusinessLogic.Services.Interfaces
 {

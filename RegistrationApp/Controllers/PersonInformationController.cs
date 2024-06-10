@@ -6,6 +6,7 @@ using System.Security.Claims;
 
 namespace RegistrationApp.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("[controller]/[action]")]
     public class PersonInformationController : ControllerBase
@@ -225,7 +226,7 @@ namespace RegistrationApp.Controllers
 
         [Authorize(Roles = "User")]
         [HttpPut("UpdatePhoto")]
-        public async Task<IActionResult> UpdatePhoto([FromQuery] Guid personId, [FromForm] IFormFile newProfilePhoto)
+        public async Task<IActionResult> UpdatePhoto([FromQuery] Guid personId, [FromForm] PhotoDto newProfilePhoto)
         {
             if (!ModelState.IsValid)
             {
@@ -237,7 +238,7 @@ namespace RegistrationApp.Controllers
                 // Get user ID from HTTP context
                 var userId = Guid.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
 
-                await _personService.UpdatePhotoAsync(userId, personId, newProfilePhoto);
+                await _personService.UpdatePhotoAsync(userId, personId, newProfilePhoto.ProfilePhoto);
                 return Ok("Photo updated successfully.");
             }
             catch (InvalidOperationException ex)

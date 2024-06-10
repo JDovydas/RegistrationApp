@@ -16,25 +16,6 @@ namespace RegistrationApp.BusinessLogic.Services
         {
             _configuration = configuration;
         }
-        //public string GetJwtToken(string userId, string userName, string role)
-        //{
-        //    List<Claim> claims = new List<Claim>
-        //    {
-        //        new Claim(ClaimTypes.NameIdentifier, userId),
-        //        //new Claim(ClaimTypes.Name, userName),
-        //        //new Claim(ClaimTypes.Role, role)
-        //    };
-
-
-        //public string GetJwtToken(string userId)
-        //{
-        //    // List of claims to be included in JWT token
-        //    List<Claim> claims = new List<Claim>
-        //    {
-        //        // Adding claim for user's ID
-        //        new Claim(ClaimTypes.NameIdentifier, userId),
-
-        //    };
 
         public string GetJwtToken(string userId, string role)
         {
