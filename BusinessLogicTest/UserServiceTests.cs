@@ -2,9 +2,6 @@
 using RegistrationApp.BusinessLogic.Services;
 using RegistrationApp.Database.Repositories.Interfaces;
 using RegistrationApp.Shared.Models;
-using System;
-using System.Threading.Tasks;
-using Xunit;
 
 namespace BusinessLogicTest
 {

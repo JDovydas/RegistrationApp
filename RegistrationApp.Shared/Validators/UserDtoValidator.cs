@@ -25,7 +25,6 @@ namespace RegistrationApp.Database.Validators
                 .Must(ContainAtLeastTwoNumbers).WithMessage("Password must contain at least two numbers.")
                 .Must(ContainAtLeastTwoSpecialCharacters).WithMessage("Password must contain at least two special characters.");
         }
-
         private bool ContainAtLeastTwoUppercase(string password)
         {
             return password.Count(char.IsUpper) >= 2;

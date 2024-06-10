@@ -2,10 +2,6 @@ using Microsoft.EntityFrameworkCore;
 using RegistrationApp.Database.Repositories;
 using RegistrationApp.Database;
 using RegistrationApp.Shared.Models;
-using System;
-using System.Threading.Tasks;
-using Xunit;
-using System.Runtime.Intrinsics.X86;
 
 namespace DatabaseTest
 {

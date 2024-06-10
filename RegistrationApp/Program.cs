@@ -17,26 +17,32 @@ namespace RegistrationApp
     {
         public static void Main(string[] args)
         {
+            // Create a WebApplicationBuilder to configure app's services and middleware
             var builder = WebApplication.CreateBuilder(args);
 
+            // Register database services using the connection string from configuration
             builder.Services.AddDatabaseServices(builder.Configuration.GetConnectionString("Database"));
+
+            // Register business logic services
             builder.Services.AddBusinessLogicServices();
 
+            // Configure JWT authentication
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
             {
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
-                    ValidateIssuer = true,
-                    ValidateAudience = true,
-                    ValidateLifetime = true,
-                    ValidateIssuerSigningKey = true,
-                    ValidIssuer = builder.Configuration["Jwt:Issuer"],
-                    ValidAudience = builder.Configuration["Jwt:Audience"],
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])),
-                    ClockSkew = TimeSpan.FromSeconds(0)
+                    ValidateIssuer = true, // Validate the issuer of the token
+                    ValidateAudience = true, // Validate the audience of the token
+                    ValidateLifetime = true, // Validate the token's expiration
+                    ValidateIssuerSigningKey = true, // Validate the signing key
+                    ValidIssuer = builder.Configuration["Jwt:Issuer"], // Issuer validation parameter
+                    ValidAudience = builder.Configuration["Jwt:Audience"], // Audience validation parameter
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])), // Signing key
+                    ClockSkew = TimeSpan.FromSeconds(0) // Clock skew tolerance
                 };
             });
 
+            // Configure Swagger for API documentation
             builder.Services.AddSwaggerGen(options =>
             {
                 options.SwaggerDoc("v1", new OpenApiInfo { Title = "JWT APP", Version = "v1" });
@@ -69,7 +75,7 @@ namespace RegistrationApp
 
             builder.Services.AddControllers();
 
-            // Register FluentValidation
+            // Register FluentValidation for automatic validation
             builder.Services.AddFluentValidationAutoValidation()
                             .AddFluentValidationClientsideAdapters()
                             .AddValidatorsFromAssemblyContaining<PersonDtoValidator>()
@@ -78,6 +84,8 @@ namespace RegistrationApp
 
 
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+
+            // Register endpoints API explorer for Swagger/OpenAPI
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
@@ -86,18 +94,17 @@ namespace RegistrationApp
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
-                app.UseSwagger();
+                app.UseSwagger();// Enable Swagger UI
                 app.UseSwaggerUI();
             }
 
-            app.UseHttpsRedirection();
+            app.UseHttpsRedirection(); // Redirect HTTP requests to HTTPS
 
-            app.UseAuthorization();
+            app.UseAuthorization(); // Enable authorization middleware
 
+            app.MapControllers(); // Map controllers to routes
 
-            app.MapControllers();
-
-            app.Run();
+            app.Run(); // Run the application
 
             //Create the first user, which is Admin automatically
         }

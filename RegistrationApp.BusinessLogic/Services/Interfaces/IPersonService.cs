@@ -20,7 +20,7 @@ namespace RegistrationApp.BusinessLogic.Services.Interfaces
         Task DeletePersonByIdAsync(Guid userId);
         Task<RetrievePersonInformationDto> RetrievePersonInformationAsync(Guid userId, Guid personId);
         bool ValitateBirthDate(string birthDateString, out DateOnly birthDate);
-        Task<string> ProfilePhotoUploadAsync(IFormFile profilePhoto);
+        Task<string> UploadProfilePhotoAsync(IFormFile profilePhoto);
         Task<FileContentResult> RetrievePersonProfilePhotoAsync(Guid userId, Guid personId);
     }
 }

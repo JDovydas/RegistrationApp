@@ -3,9 +3,6 @@ using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Processing;
 using SixLabors.ImageSharp.PixelFormats;
 using Microsoft.AspNetCore.Mvc;
-using System.Net.NetworkInformation;
-using Azure;
-using RegistrationApp.Shared.Models;
 
 namespace RegistrationApp.BusinessLogic.Helpers
 {
@@ -36,7 +33,7 @@ namespace RegistrationApp.BusinessLogic.Helpers
                     Mode = ResizeMode.Stretch //Stretches image to fit specified dimensions.
                 }));
 
-                await image.SaveAsync(filePath); // Save resized image, overwriting original file (if that exists)
+                await image.SaveAsync(filePath); // Save resized image, overwriting original file
             }
             return filePath;
         }
@@ -52,7 +49,7 @@ namespace RegistrationApp.BusinessLogic.Helpers
             }
             byte[] fileBytes = await System.IO.File.ReadAllBytesAsync(filePath); //reads all bytes from file at specified filePath.
 
-            //Creates new instance of FileContentResult with byte array(fileBytes) and the MIME type("image/jpeg").
+            //Creates new instance of FileContentResult with byte array(fileBytes) and type ("image/jpeg").
             //FileContentResult is used to return a file as the response content, which can then be used to send the file data in an HTTP response.
             return new FileContentResult(fileBytes, "image/jpeg");
         }

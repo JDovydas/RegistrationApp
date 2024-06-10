@@ -4,9 +4,6 @@ using RegistrationApp.BusinessLogic.Services.Interfaces;
 using RegistrationApp.Controllers;
 using RegistrationApp.Shared.DTOs;
 using RegistrationApp.Shared.Models;
-using System;
-using System.Threading.Tasks;
-using Xunit;
 
 namespace ControllerTest
 {

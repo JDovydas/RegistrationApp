@@ -9,7 +9,10 @@ namespace RegistrationApp.BusinessLogic.Services
 {
     public class UserService : IUserService
     {
+        // Dependency on IUserRepository
         private readonly IUserRepository _userRepository;
+
+        // Constructor to inject IUserRepository dependency
         public UserService(IUserRepository userRepository)
         {
             _userRepository = userRepository;
@@ -27,6 +30,7 @@ namespace RegistrationApp.BusinessLogic.Services
 
         public async Task<User> CreateUserAsync(string username, string password)
         {
+            // Create password hash and salt
             CreatePasswordHash(password, out byte[] passwordHash, out byte[] passwordSalt);
             User newUser = new User
             {
@@ -56,16 +60,27 @@ namespace RegistrationApp.BusinessLogic.Services
 
         public void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
         {
+            // Using HMACSHA512 cryptographic algorithm to generate hash and salt
             using var hmac = new HMACSHA512();
+
+            // Generate random key to be used as salt
             passwordSalt = hmac.Key;
+
+            // Compute hash of password byte array
             passwordHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
         }
 
         private bool VerifyPasswordHash(string password, byte[] passwordHash, byte[] passwordSalt)
         {
+            // Initialize new instance of the HMACSHA512 cryptographic algorithm with the provided salt (key)
             using var hmac = new HMACSHA512(passwordSalt);
+
+            // Convert password string to byte array using UTF-8 encoding
+            //generates hash by combining password bytes and salt
             var computedHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
 
+            //Compare computed hash with provided hash
+            // SequenceEqual method checks if both byte arrays contain same elements in the same order
             return computedHash.SequenceEqual(passwordHash);
         }
 

@@ -19,6 +19,7 @@ namespace RegistrationApp.BusinessLogic.Services
         private readonly IUserRepository _userRepository;
         private readonly IPlaceOfResidenceRepository _placeOfResidenceRepository;
 
+        // Constructor to initialize repositories
         public PersonService(IPersonRepository personRepository, IUserRepository userRepository, IPlaceOfResidenceRepository placeOfResidenceRepository)
         {
             _personRepository = personRepository;
@@ -65,7 +66,7 @@ namespace RegistrationApp.BusinessLogic.Services
             await _placeOfResidenceRepository.AddPlaceOfResidenceAsync(placeOfResidence);
         }
 
-        public async Task<string> ProfilePhotoUploadAsync(IFormFile profilePhoto)
+        public async Task<string> UploadProfilePhotoAsync(IFormFile profilePhoto)
         {
             return await ProfilePhotoHelpers.SaveProfilePhotoAsync(profilePhoto);
         }
@@ -73,12 +74,13 @@ namespace RegistrationApp.BusinessLogic.Services
         public bool ValitateBirthDate(string birthDateString, out DateOnly birthDate)
         {
             return PersonInformationHelpers.TryParseBirthDate(birthDateString, out birthDate);
-
         }
 
         public async Task UpdateNameAsync(Guid userId, Guid personId, string newName)
         {
-            await EnsureUserOwnsPersonAsync(userId, personId); // DOES THIS STOP PROCEEDING WITH THE METHOD FURTHER?
+            //await EnsureUserOwnsPersonAsync(userId, personId);
+
+            await PersonInformationHelpers.EnsureUserOwnsPersonAsync(_personRepository, userId, personId); // Ensure the user owns the person
 
             var person = await _personRepository.GetPersonByIdAsync(personId);
             if (person == null)
@@ -93,7 +95,9 @@ namespace RegistrationApp.BusinessLogic.Services
 
         public async Task UpdateLastNameAsync(Guid userId, Guid personId, string newlastName)
         {
-            await EnsureUserOwnsPersonAsync(userId, personId);
+            //await EnsureUserOwnsPersonAsync(userId, personId);
+            await PersonInformationHelpers.EnsureUserOwnsPersonAsync(_personRepository, userId, personId); // Ensure the user owns the person
+
 
             var person = await _personRepository.GetPersonByIdAsync(personId);
             if (person == null)
@@ -108,7 +112,8 @@ namespace RegistrationApp.BusinessLogic.Services
 
         public async Task UpdateGenderAsync(Guid userId, Guid personId, string newGender) // Should I user just Task instead?
         {
-            await EnsureUserOwnsPersonAsync(userId, personId);
+            //await EnsureUserOwnsPersonAsync(userId, personId);
+            await PersonInformationHelpers.EnsureUserOwnsPersonAsync(_personRepository, userId, personId); // Ensure the user owns the person
 
             var person = await _personRepository.GetPersonByIdAsync(personId);
             if (person == null)
@@ -122,7 +127,9 @@ namespace RegistrationApp.BusinessLogic.Services
 
         public async Task UpdateBirthDateAsync(Guid userId, Guid personId, DateOnly newBirthDate) // Should I user just Task instead?
         {
-            await EnsureUserOwnsPersonAsync(userId, personId);
+            //await EnsureUserOwnsPersonAsync(userId, personId);
+            await PersonInformationHelpers.EnsureUserOwnsPersonAsync(_personRepository, userId, personId); // Ensure the user owns the person
+
 
             var person = await _personRepository.GetPersonByIdAsync(personId);
             if (person == null)
@@ -136,7 +143,8 @@ namespace RegistrationApp.BusinessLogic.Services
 
         public async Task UpdateIdNumberAsync(Guid userId, Guid personId, string newPersonalId)// Should I user just Task instead?
         {
-            await EnsureUserOwnsPersonAsync(userId, personId);
+            //await EnsureUserOwnsPersonAsync(userId, personId);
+            await PersonInformationHelpers.EnsureUserOwnsPersonAsync(_personRepository, userId, personId); // Ensure the user owns the person
 
             var person = await _personRepository.GetPersonByIdAsync(personId);
             if (person == null)
@@ -150,7 +158,8 @@ namespace RegistrationApp.BusinessLogic.Services
 
         public async Task UpdatePhoneNumberAsync(Guid userId, Guid personId, string newPhoneNumber)
         {
-            await EnsureUserOwnsPersonAsync(userId, personId);
+            //await EnsureUserOwnsPersonAsync(userId, personId);
+            await PersonInformationHelpers.EnsureUserOwnsPersonAsync(_personRepository, userId, personId); // Ensure the user owns the person
 
             var person = await _personRepository.GetPersonByIdAsync(personId);
             if (person == null)
@@ -164,7 +173,8 @@ namespace RegistrationApp.BusinessLogic.Services
 
         public async Task UpdateEmailAsync(Guid userId, Guid personId, string newEmail)
         {
-            await EnsureUserOwnsPersonAsync(userId, personId);
+            //await EnsureUserOwnsPersonAsync(userId, personId);
+            await PersonInformationHelpers.EnsureUserOwnsPersonAsync(_personRepository, userId, personId); // Ensure the user owns the person
 
             var person = await _personRepository.GetPersonByIdAsync(personId);
             if (person == null)
@@ -178,7 +188,9 @@ namespace RegistrationApp.BusinessLogic.Services
 
         public async Task UpdatePhotoAsync(Guid userId, Guid personId, IFormFile newProfilePhoto)
         {
-            await EnsureUserOwnsPersonAsync(userId, personId);
+            //await EnsureUserOwnsPersonAsync(userId, personId);
+            await PersonInformationHelpers.EnsureUserOwnsPersonAsync(_personRepository, userId, personId); // Ensure the user owns the person
+
 
             var person = await _personRepository.GetPersonByIdAsync(personId);
             if (person == null)
@@ -199,7 +211,6 @@ namespace RegistrationApp.BusinessLogic.Services
             await _personRepository.UpdatePersonAsync(person);
         }
 
-
         public async Task DeletePersonByIdAsync(Guid personId)
         {
             var personToDelete = await _personRepository.GetPersonByIdAsync(personId);
@@ -215,8 +226,6 @@ namespace RegistrationApp.BusinessLogic.Services
                 ProfilePhotoHelpers.DeleteProfilePhoto(personToDelete.FilePath);
             }
             await _personRepository.DeletePersonAsync(personToDelete);
-
-
         }
 
         public async Task<RetrievePersonInformationDto> RetrievePersonInformationAsync(Guid userId, Guid personId)
@@ -259,19 +268,19 @@ namespace RegistrationApp.BusinessLogic.Services
 
         }
 
-        public async Task EnsureUserOwnsPersonAsync(Guid userId, Guid personId) /// should it be added to Helpers? Is it OK that Task does not contain a  model in itself?
-        {
-            var person = await _personRepository.GetPersonByIdAsync(personId);
-            if (person == null)
-            {
-                throw new InvalidOperationException("Person not found.");
-            }
+        //public async Task EnsureUserOwnsPersonAsync(Guid userId, Guid personId)
+        //{
+        //    var person = await _personRepository.GetPersonByIdAsync(personId);
+        //    if (person == null)
+        //    {
+        //        throw new InvalidOperationException("Person not found.");
+        //    }
 
-            if (person.UserId != userId)
-            {
-                throw new UnauthorizedAccessException("You are not authorized to update this person's information.");
-            }
-        }
+        //    if (person.UserId != userId)
+        //    {
+        //        throw new UnauthorizedAccessException("You are not authorized to update this person's information.");
+        //    }
+        //}
 
     }
 }

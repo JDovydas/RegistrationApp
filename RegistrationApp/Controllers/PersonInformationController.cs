@@ -1,20 +1,21 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.FileProviders;
 using RegistrationApp.BusinessLogic.Services.Interfaces;
 using RegistrationApp.Shared.DTOs;
 using System.Security.Claims;
 
 namespace RegistrationApp.Controllers
 {
-    [Authorize(Roles = "User")]
     [ApiController]
     [Route("[controller]/[action]")]
     public class PersonInformationController : ControllerBase
     {
+        // Private fields to hold service instances
         private readonly IPersonService _personService;
         private readonly IPlaceOfResidenceService _placeOfResidenceService;
         private readonly IUserService _userService;
+
+        // Constructor - initializes services via dependency injection
         public PersonInformationController(IPersonService personService, IPlaceOfResidenceService placeOfResidenceService, IUserService userService)
         {
             _personService = personService;
@@ -29,24 +30,29 @@ namespace RegistrationApp.Controllers
         {
             if (!ModelState.IsValid)
             {
+                // Returns 400 Bad Request response with model state errors
                 return BadRequest(ModelState);
             }
 
             try
             {
+                // Get user ID from HTTP context
                 var userId = Guid.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
 
+                // Validate birth date format
                 if (!_personService.ValitateBirthDate(personDto.BirthDate, out DateOnly birthDate))//Moved to helpers
                 {
                     return BadRequest("Invalid date format for BirthDate. Please use YYYY-MM-DD.");
                 }
 
+                // Handle profile photo
                 string filePath = null;
                 if (personDto.ProfilePhoto != null)
                 {
-                    filePath = await _personService.ProfilePhotoUploadAsync(personDto.ProfilePhoto); // //Moved to helpers
+                    filePath = await _personService.UploadProfilePhotoAsync(personDto.ProfilePhoto); //Moved to helpers
                 }
 
+                // Add person information
                 await _personService.AddPersonInformationAsync(userId, personDto, placeOfResidenceDto, filePath, birthDate);
                 return Ok("Person information added successfully.");
             }
@@ -67,6 +73,7 @@ namespace RegistrationApp.Controllers
 
             try
             {
+                // Get the user ID from the HTTP context
                 var userId = Guid.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
 
                 await _personService.UpdateNameAsync(userId, personId, newName);
@@ -89,10 +96,11 @@ namespace RegistrationApp.Controllers
 
             try
             {
+                // Get the user ID from the HTTP context
                 var userId = Guid.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
 
                 await _personService.UpdateLastNameAsync(userId, personId, newLastName);
-                return Ok("Last name updated successfully.");
+                return Ok("Last name updated successfully."); // Return 200 OK if successful
             }
             catch (InvalidOperationException ex)
             {
@@ -111,6 +119,7 @@ namespace RegistrationApp.Controllers
 
             try
             {
+                // Get user ID from HTTP context
                 var userId = Guid.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
 
                 await _personService.UpdateGenderAsync(userId, personId, newGender);
@@ -133,6 +142,7 @@ namespace RegistrationApp.Controllers
 
             try
             {
+                // Get user ID from HTTP context
                 var userId = Guid.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
 
                 await _personService.UpdateBirthDateAsync(userId, personId, newBirthDate);
@@ -155,6 +165,7 @@ namespace RegistrationApp.Controllers
 
             try
             {
+                // Get user ID from HTTP context
                 var userId = Guid.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
 
                 await _personService.UpdateIdNumberAsync(userId, personId, newPersonalIdNumber);
@@ -177,6 +188,7 @@ namespace RegistrationApp.Controllers
 
             try
             {
+                // Get user ID from HTTP context
                 var userId = Guid.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
 
                 await _personService.UpdatePhoneNumberAsync(userId, personId, newPhoneNumber);
@@ -199,6 +211,7 @@ namespace RegistrationApp.Controllers
 
             try
             {
+                // Get user ID from HTTP context
                 var userId = Guid.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
 
                 await _personService.UpdatePhoneNumberAsync(userId, personId, newEmail);
@@ -221,6 +234,7 @@ namespace RegistrationApp.Controllers
 
             try
             {
+                // Get user ID from HTTP context
                 var userId = Guid.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
 
                 await _personService.UpdatePhotoAsync(userId, personId, newProfilePhoto);
@@ -243,6 +257,7 @@ namespace RegistrationApp.Controllers
 
             try
             {
+                // Get user ID from HTTP context
                 var userId = Guid.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
 
                 await _placeOfResidenceService.UpdateCityAsync(userId, personId, newCity);
@@ -265,6 +280,7 @@ namespace RegistrationApp.Controllers
 
             try
             {
+                // Get user ID from HTTP context
                 var userId = Guid.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
 
                 await _placeOfResidenceService.UpdateStreetAsync(userId, personId, newStreet);
@@ -287,6 +303,7 @@ namespace RegistrationApp.Controllers
 
             try
             {
+                // Get user ID from HTTP context
                 var userId = Guid.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
 
                 await _placeOfResidenceService.UpdateHouseNumberAsync(userId, personId, newHouseNumber);
@@ -309,6 +326,7 @@ namespace RegistrationApp.Controllers
 
             try
             {
+                // Get user ID from HTTP context
                 var userId = Guid.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
 
                 await _placeOfResidenceService.UpdateAppartmentNumberAsync(userId, personId, newAppartmentNumber);
@@ -322,11 +340,12 @@ namespace RegistrationApp.Controllers
         }
 
         [Authorize(Roles = "User")]
-        [HttpGet("RetrieveAllInformation")]
+        [HttpGet("RetrieveAllPersonInformation")]
         public async Task<IActionResult> RetrievePersonInformation([FromQuery] Guid personId)
         {
             try
             {
+                // Get user ID from HTTP context
                 var userId = Guid.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
                 var personInfo = await _personService.RetrievePersonInformationAsync(userId, personId);
                 return Ok(personInfo);
@@ -343,6 +362,7 @@ namespace RegistrationApp.Controllers
         {
             try
             {
+                // Get user ID from HTTP context
                 var userId = Guid.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
                 var personProfilePhoto = await _personService.RetrievePersonProfilePhotoAsync(userId, personId);
                 return personProfilePhoto;

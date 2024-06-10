@@ -1,11 +1,8 @@
-using Microsoft.Extensions.DependencyModel;
 using Moq;
 using RegistrationApp.BusinessLogic.Services;
 using RegistrationApp.Database.Repositories.Interfaces;
 using RegistrationApp.Shared.DTOs;
 using RegistrationApp.Shared.Models;
-using System.Collections.Generic;
-
 
 namespace BusinessLogicTest
 {

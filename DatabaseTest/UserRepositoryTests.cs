@@ -2,9 +2,6 @@
 using RegistrationApp.Database.Repositories;
 using RegistrationApp.Database;
 using RegistrationApp.Shared.Models;
-using System;
-using System.Threading.Tasks;
-using Xunit;
 
 namespace DatabaseTest
 {

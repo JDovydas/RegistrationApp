@@ -1,16 +1,10 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
-using Newtonsoft.Json.Linq;
 using RegistrationApp.BusinessLogic.Services.Interfaces;
 using RegistrationApp.Controllers;
 using RegistrationApp.Shared.DTOs;
-using System;
-using System.Net.Sockets;
 using System.Security.Claims;
-using System.Threading.Tasks;
-using Xunit;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace ControllerTest
 {

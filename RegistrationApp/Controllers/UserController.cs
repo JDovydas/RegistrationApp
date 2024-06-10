@@ -10,9 +10,11 @@ namespace RegistrationApp.Controllers
     [Route("[controller]")]
     public class UserController : ControllerBase
     {
+        // Private fields to hold service instances
         private readonly IUserService _userService;
         private readonly IJwtService _jwtService;
 
+        // Constructor - initializes services via dependency injection
         public UserController(IUserService userService, IJwtService jwtService)
         {
             _userService = userService;
@@ -21,7 +23,7 @@ namespace RegistrationApp.Controllers
 
         [AllowAnonymous]
         [HttpPost("SignUp")]
-        public async Task<IActionResult> SignUp([FromForm] UserDto userDto) //Should I implement password entry, which would be shown twice?
+        public async Task<IActionResult> SignUp([FromForm] UserDto userDto)
         {
             if (!ModelState.IsValid)
             {
@@ -41,17 +43,21 @@ namespace RegistrationApp.Controllers
         }
         [AllowAnonymous]
         [HttpPost("Login")]
-        public async Task<IActionResult> Login([FromForm] UserDto userDto) //check if [FromForm = separate fields for userName and Password
+        public async Task<IActionResult> Login([FromForm] UserDto userDto)
         {
             try
             {
                 var user = await _userService.LoginAsync(userDto.Username, userDto.Password);
-                var token = _jwtService.GetJwtToken(user.Id.ToString(), user.Username, user.Role);
+                // Generates JWT token for the authenticated user
+                var token = _jwtService.GetJwtToken(user.Id.ToString(), user.Role);
+                //var token = _jwtService.GetJwtToken(user.Id.ToString(), user.Username, user.Role);
+                // Returns 200 OK response with user information and token
                 return Ok(new { user, token });
             }
 
             catch (InvalidOperationException ex)
             {
+                // Catches any InvalidOperationException and returns 401 Unauthorized response with exception message
                 return Unauthorized(ex.Message);
             }
         }
@@ -64,11 +70,13 @@ namespace RegistrationApp.Controllers
             try
             {
                 await _userService.DeleteUserByIdAsync(userId);
+                // Returns 200 OK response with success message
                 return Ok("User deleted successfully");
 
             }
             catch (InvalidOperationException ex)
             {
+                // Catches any InvalidOperationException and returns 400 Bad Request response with the exception message
                 return BadRequest(ex.Message);
             }
         }

@@ -7,9 +7,10 @@ namespace RegistrationApp.Database.Repositories
 {
     public class UserRepository : IUserRepository
     {
-
+        // Database context for accessing database
         private readonly RegistrationAppContext _context;
 
+        // Constructor to inject database context
         public UserRepository(RegistrationAppContext appContext)
         {
             _context = appContext;
@@ -27,30 +28,18 @@ namespace RegistrationApp.Database.Repositories
             return await _context.Users.FirstOrDefaultAsync(u => u.Username == username);
         }
 
-        public async Task<User> GetUserByIdAsync(Guid userId) //Check if People need to be included
+        public async Task<User> GetUserByIdAsync(Guid userId)
         {
-            return await _context.Users.Include(p => p.People).FirstOrDefaultAsync(u => u.Id == userId);
+            return await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
         }
 
         public async Task DeleteUserAsync(User user)
         {
             var userToDelete = await _context.Users.FirstOrDefaultAsync(u => u.Id == user.Id);
-            if (userToDelete == null)
-            {
-                throw new InvalidOperationException("User not found.");
-            }
 
-            try
-            {
-                _context.Users.Remove(userToDelete);
-                await _context.SaveChangesAsync();
-            }
-            catch (Exception ex)
-            {
-                Log.Error($"[{nameof(DeleteUserAsync)}]: {ex.Message}");
-                throw;
-            }
-            Log.Information($"[{nameof(DeleteUserAsync)}]: Successfully removed User with ID: {user.Id}");
+            _context.Users.Remove(userToDelete);
+            await _context.SaveChangesAsync();
+
         }
 
     }

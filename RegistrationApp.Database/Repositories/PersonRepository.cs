@@ -2,14 +2,15 @@
 using RegistrationApp.Database.Repositories.Interfaces;
 using RegistrationApp.Shared.Models;
 using Serilog;
-using System;
 
 namespace RegistrationApp.Database.Repositories
 {
     public class PersonRepository : IPersonRepository
     {
+        // Database context for accessing database
         private readonly RegistrationAppContext _context;
 
+        // Constructor to inject database context
         public PersonRepository(RegistrationAppContext context)
         {
             _context = context;
@@ -18,6 +19,10 @@ namespace RegistrationApp.Database.Repositories
         public async Task<Person> GetPersonByIdAsync(Guid personId)
         {
             var person = await _context.People.FirstOrDefaultAsync(p => p.Id == personId);
+            if (person == null)
+            {
+                throw new InvalidOperationException("Person not found.");
+            }
             return person;
         }
 
@@ -34,24 +39,19 @@ namespace RegistrationApp.Database.Repositories
             {
                 throw new InvalidOperationException("Person not found.");
             }
+            _context.Update(person);
             await _context.SaveChangesAsync();
         }
 
         public async Task DeletePersonAsync(Person person)
         {
             var personToDelete = await _context.People.FirstOrDefaultAsync(p => p.Id == person.Id);
-            try
+            if (personToDelete == null)
             {
-                _context.People.Remove(personToDelete);
-                await _context.SaveChangesAsync();
+                throw new InvalidOperationException("Person not found.");
             }
-            catch (Exception ex)
-            {
-                Log.Error($"[{nameof(DeletePersonAsync)}]: {ex.Message}");
-                throw;
-            }
-            Log.Information($"[{nameof(DeletePersonAsync)}]: Successfully removed User with ID: {person.Id}");
-
+            _context.People.Remove(personToDelete);
+            await _context.SaveChangesAsync();
         }
     }
 }
