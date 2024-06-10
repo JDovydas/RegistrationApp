@@ -2,6 +2,7 @@
 using RegistrationApp.Database.Repositories.Interfaces;
 using RegistrationApp.Shared.Models;
 using Serilog;
+using System;
 
 namespace RegistrationApp.Database.Repositories
 {
@@ -25,17 +26,33 @@ namespace RegistrationApp.Database.Repositories
 
         public async Task<User> GetUserByUsernameAsync(string username)
         {
-            return await _context.Users.FirstOrDefaultAsync(u => u.Username == username);
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == username);
+            if (user == null)
+            {
+                throw new InvalidOperationException("User not found.");
+            }
+
+            return user;
         }
 
         public async Task<User> GetUserByIdAsync(Guid userId)
         {
-            return await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+            if (user == null)
+            {
+                throw new InvalidOperationException("User not found.");
+            }
+
+            return user;
         }
 
         public async Task DeleteUserAsync(User user)
         {
             var userToDelete = await _context.Users.FirstOrDefaultAsync(u => u.Id == user.Id);
+            if (userToDelete == null)
+            {
+                throw new InvalidOperationException("User not found.");
+            }
 
             _context.Users.Remove(userToDelete);
             await _context.SaveChangesAsync();

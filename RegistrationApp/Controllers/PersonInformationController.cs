@@ -29,7 +29,7 @@ namespace RegistrationApp.Controllers
         [HttpPost("AddPersonInformation")]
         public async Task<IActionResult> AddPersonInformation([FromForm] PersonDto personDto, [FromForm] PlaceOfResidenceDto placeOfResidenceDto)
         {
-            if (!ModelState.IsValid)
+            if (!ModelState.IsValid) //dictionary that contains state of the model and any validation errors
             {
                 // Returns 400 Bad Request response with model state errors
                 return BadRequest(ModelState);
@@ -101,7 +101,7 @@ namespace RegistrationApp.Controllers
                 var userId = Guid.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
 
                 await _personService.UpdateLastNameAsync(userId, personId, newLastName);
-                return Ok("Last name updated successfully."); // Return 200 OK if successful
+                return Ok("Last name updated successfully.");
             }
             catch (InvalidOperationException ex)
             {
@@ -272,7 +272,7 @@ namespace RegistrationApp.Controllers
 
         [Authorize(Roles = "User")]
         [HttpPut("UpdateStreet")]
-        public async Task<IActionResult> UpdateStreet([FromQuery] Guid personId, [FromBody] string newStreet)
+        public async Task<IActionResult> UpdateStreet([FromQuery] Guid personId, [FromQuery] string newStreet)
         {
             if (!ModelState.IsValid)
             {
@@ -295,7 +295,7 @@ namespace RegistrationApp.Controllers
 
         [Authorize(Roles = "User")]
         [HttpPut("UpdateHouseNumber")]
-        public async Task<IActionResult> UpdateHouseNumber([FromQuery] Guid personId, [FromBody] int newHouseNumber)
+        public async Task<IActionResult> UpdateHouseNumber([FromQuery] Guid personId, [FromQuery] int newHouseNumber)
         {
             if (!ModelState.IsValid)
             {
@@ -318,7 +318,7 @@ namespace RegistrationApp.Controllers
 
         [Authorize(Roles = "User")]
         [HttpPut("UpdateAppartmentNumber")]
-        public async Task<IActionResult> UpdateAppartmentNumber([FromQuery] Guid personId, [FromBody] int newAppartmentNumber)
+        public async Task<IActionResult> UpdateAppartmentNumber([FromQuery] Guid personId, [FromQuery] int newAppartmentNumber)
         {
             if (!ModelState.IsValid)
             {
@@ -337,7 +337,6 @@ namespace RegistrationApp.Controllers
             {
                 return BadRequest(ex.Message);
             }
-
         }
 
         [Authorize(Roles = "User")]
@@ -387,7 +386,6 @@ namespace RegistrationApp.Controllers
             {
                 return BadRequest(ex.Message);
             }
-
         }
     }
 }

@@ -38,7 +38,6 @@ namespace RegistrationApp.BusinessLogic.Helpers
             return filePath;
         }
 
-
         public static async Task<FileContentResult> GetProfilePhotoAsync(string filePath)
         {
             if (string.IsNullOrEmpty(filePath) || !System.IO.File.Exists(filePath)) //Checks if file exists at the specified filePath.

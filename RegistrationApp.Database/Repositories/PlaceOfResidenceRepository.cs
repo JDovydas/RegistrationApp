@@ -23,46 +23,34 @@ namespace RegistrationApp.Database.Repositories
             _context = context;
         }
 
-        //public async Task<PlaceOfResidence> AddPlaceOfResidenceAsync(PlaceOfResidence placeOfResidence)
         public async Task AddPlaceOfResidenceAsync(PlaceOfResidence placeOfResidence)
         {
             await _context.PlacesOfResidence.AddAsync(placeOfResidence);
             await _context.SaveChangesAsync();
-            //return placeOfResidence;
         }
-
-        //public async Task<PlaceOfResidence> UpdatePlaceOfResidenceAsync(PlaceOfResidence placeOfResidence)
-        //{
-        //    var existingplaceOfResidence = await _context.PlacesOfResidence.FindAsync(placeOfResidence.Id);
-        //    if (existingplaceOfResidence == null)
-        //    {
-        //        throw new InvalidOperationException("Person not found.");
-        //    }
-        //    existingplaceOfResidence.City = placeOfResidence.City;
-        //    existingplaceOfResidence.Street = placeOfResidence.Street;
-        //    existingplaceOfResidence.HouseNumber = placeOfResidence.HouseNumber;
-        //    existingplaceOfResidence.AppartmentNumber = placeOfResidence.AppartmentNumber;
-        //    existingplaceOfResidence.Person = placeOfResidence.Person;// This one to be passed from earlier?
-
-
-        //    await _context.SaveChangesAsync();
-        //    return existingplaceOfResidence;
-        //}
 
         public async Task UpdatePlaceOfResidenceAsync(PlaceOfResidence placeOfResidence)
         {
-            var existingplaceOfResidence = await _context.PlacesOfResidence.FindAsync(placeOfResidence.Id);
-            if (existingplaceOfResidence == null)
+            var existingPlaceOfResidence = await _context.PlacesOfResidence.FirstOrDefaultAsync(p => p.Id == placeOfResidence.Id);
+            if (existingPlaceOfResidence == null)
             {
                 throw new InvalidOperationException("Place of residence not found.");
             }
+
             _context.Update(placeOfResidence);
             await _context.SaveChangesAsync();
         }
 
         public async Task<PlaceOfResidence> GetPlaceOfResidenceByPersonIdAsync(Guid personId)
         {
-            return await _context.PlacesOfResidence.FirstOrDefaultAsync(p => p.PersonId == personId);
+            var placeOfResidence = await _context.PlacesOfResidence.FirstOrDefaultAsync(p => p.PersonId == personId);
+            if (placeOfResidence == null)
+            {
+                throw new InvalidOperationException("Place of residence not found.");
+            }
+
+            return placeOfResidence;
+
         }
 
 

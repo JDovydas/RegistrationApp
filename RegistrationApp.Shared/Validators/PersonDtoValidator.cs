@@ -1,16 +1,17 @@
-﻿using FluentValidation;
+﻿using FluentValidation; //.NET library for building strongly-typed validation rules. Creates validation rules for classes, usually DTOs or models. 
 using Microsoft.AspNetCore.Http;
 using RegistrationApp.Shared.DTOs;
 
 namespace RegistrationApp.Shared.Validators
 {
-    public class PersonDtoValidator : AbstractValidator<PersonDto>
+    public class PersonDtoValidator : AbstractValidator<PersonDto> //Validators defined for DTO ingeriting "AbstractValidator".
     {
         public PersonDtoValidator()
         {
+            //RuleFor method - specifies property to validate and conditions it must satisfy.
             RuleFor(x => x.Name)
                 .NotEmpty().WithMessage("Name is required.")
-                .Matches("^[a-zA-ZĄČĘĖĮŠŲŪŽąčęėįšųūž]+$").WithMessage("Name must contain only letters.") //no spaces/dashes are allowed 
+                .Matches("^[a-zA-ZĄČĘĖĮŠŲŪŽąčęėįšųūž]+$").WithMessage("Name must contain only letters.")
                 .Length(2, 50).WithMessage("Name must be between 2 and 50 characters.");
 
             RuleFor(x => x.LastName)
@@ -23,7 +24,7 @@ namespace RegistrationApp.Shared.Validators
 
             RuleFor(x => x.BirthDate)
                 .NotEmpty().WithMessage("BirthDate is required.")
-                .Must(BeAValidDate).WithMessage("Invalid date format for BirthDate. Please use YYYY-MM-DD.")
+                .Must(BeAValidDate).WithMessage("Invalid date format for BirthDate. Please use YYYY-MM-DD.") //custom validators use "Must" method.
                 .Must(BeAValidAge).WithMessage("BirthDate cannot be in the future and must be within the last 120 years.");
 
             RuleFor(x => x.PersonalId)
@@ -32,7 +33,7 @@ namespace RegistrationApp.Shared.Validators
 
             RuleFor(x => x.PhoneNumber)
                 .NotEmpty().WithMessage("Phone Number is required.")
-                .Matches(@"^(?:\+3706\d{7}|06\d{7})$").WithMessage("Phone Number must be in the format +3706XXXXXXX or 06XXXXXXX."); //?: - allows either of the patterns
+                .Matches(@"^(?:\+3706\d{7}|06\d{7})$").WithMessage("Phone Number must be in the format +3706XXXXXXX or 06XXXXXXX.");
 
             RuleFor(x => x.Email)
                 .NotEmpty().WithMessage("Email is required.")

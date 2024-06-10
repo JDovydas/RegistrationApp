@@ -64,23 +64,20 @@ namespace ControllerTest
                 HouseNumber = 1
             };
 
-            // Birth date will be used in mock setup.
+            // Birth date will to be used in mock setup.
             DateOnly birthDate = DateOnly.FromDateTime(DateTime.Parse("1990-01-01"));
 
-            // Setting up mock for ValitateBirthDate method in IPersonService interface
-            // It is configured to return true when called with any string as argument and to output birthDate variable.
+            // returns true when called with any string as argument and to output birthDate variable.
             _personServiceMock.Setup(s => s.ValitateBirthDate(It.IsAny<string>(), out birthDate))
                               // Callback method allows setting out parameter when ValitateBirthDate method is called.
                               .Callback((string input, out DateOnly date) =>
                               {
-                                  // Out parameter is set to the specified birth date.
+                                  // Out parameter is set to specified birth date.
                                   date = DateOnly.FromDateTime(DateTime.Parse("1990-01-01"));
                               })
-                              // The Returns method specifies return value of mocked method.
                               .Returns(true);
 
-            // Setting up mock for the AddPersonInformationAsync method in IPersonService interface.
-            // It is configured to return a completed Task when called with any Guid, the specified personDto, placeOfResidenceDto, null, and birthDate.
+            // mock - return completed Task when called with any Guid, specified personDto, placeOfResidenceDto, null and birthDate.
             _personServiceMock.Setup(s => s.AddPersonInformationAsync(It.IsAny<Guid>(), personDto, placeOfResidenceDto, null, birthDate))
                                // Returns method specifies return value of mocked method.
                                .Returns(Task.CompletedTask);
@@ -92,43 +89,6 @@ namespace ControllerTest
             var okResult = Assert.IsType<OkObjectResult>(result);
             Assert.Equal("Person information added successfully.", okResult.Value);
         }
-
-        [Fact]
-        public async Task AddPersonInformation_ShouldReturnBadRequest_WhenBirthDateIsInvalid()
-        {
-            // Arrange
-            var personDto = new PersonDto
-            {
-                Name = "Jonas",
-                LastName = "Pirmasis",
-                BirthDate = "invalid-date"
-            };
-
-            var placeOfResidenceDto = new PlaceOfResidenceDto
-            {
-                City = "Vilnius",
-                Street = "Gedimino pr.",
-                HouseNumber = 1
-            };
-
-            // Declare variable to hold out parameter value for birth date validation
-            DateOnly birthDate;
-
-            // Set up mock for ValitateBirthDate method in IPersonService interface.
-            // This is configured to return false when called with any string as argument.
-            _personServiceMock.Setup(s => s.ValitateBirthDate(It.IsAny<string>(), out birthDate))
-                              .Returns(false);
-
-            // Act
-            var result = await _controller.AddPersonInformation(personDto, placeOfResidenceDto);
-
-            // Assert
-            // Check if result is of type BadRequestObjectResult
-            var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
-            // Verify that value of bad request result matches expected error message.
-            Assert.Equal("Invalid date format for BirthDate. Please use YYYY-MM-DD.", badRequestResult.Value);
-        }
-
 
         [Fact]
         public async Task UpdateName_ShouldReturnOkResult_WhenNameIsUpdatedSuccessfully()

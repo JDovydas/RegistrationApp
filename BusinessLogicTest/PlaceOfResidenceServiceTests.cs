@@ -27,25 +27,32 @@ namespace BusinessLogicTest
             // Arrange
             var userId = Guid.NewGuid();
             var personId = Guid.NewGuid();
+            var placeOfResidenceId = Guid.NewGuid();
+            var placeOfResidence = new PlaceOfResidence
+            {
+                Id = placeOfResidenceId,
+                City = "OldCity"
+            };
+
             var person = new Person
             {
                 Id = personId,
                 UserId = userId,
-                PlaceOfResidence = new PlaceOfResidence
-                {
-                    Id = Guid.NewGuid(),
-                    City = "OldCity"
-                }
+                PlaceOfResidenceId = placeOfResidenceId,
+                PlaceOfResidence = placeOfResidence
             };
-            // Mocking the GetUserByIdAsync to return the created person
+
+            // Mocking the GetPersonByIdAsync to return the created person
             _personRepositoryMock.Setup(repo => repo.GetPersonByIdAsync(personId)).ReturnsAsync(person);
+
+            // Mocking the GetPlaceOfResidenceByPersonIdAsync to return the created place of residence
+            _placeOfResidenceRepositoryMock.Setup(repo => repo.GetPlaceOfResidenceByPersonIdAsync(personId)).ReturnsAsync(placeOfResidence);
 
             // Act
             await _placeOfResidenceService.UpdateCityAsync(userId, personId, "Kaunas");
 
             // Assert
-            Assert.Equal("Kaunas", person.PlaceOfResidence.City);
-
+            Assert.Equal("Kaunas", placeOfResidence.City);
         }
     }
 }

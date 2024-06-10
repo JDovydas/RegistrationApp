@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using RegistrationApp.Database.Repositories.Interfaces;
 using RegistrationApp.Shared.Models;
-using Serilog;
 
 namespace RegistrationApp.Database.Repositories
 {
@@ -23,6 +22,7 @@ namespace RegistrationApp.Database.Repositories
             {
                 throw new InvalidOperationException("Person not found.");
             }
+
             return person;
         }
 
@@ -34,12 +34,13 @@ namespace RegistrationApp.Database.Repositories
 
         public async Task UpdatePersonAsync(Person person)
         {
-            await _context.People.FindAsync(person.Id);
-            if (person == null)
+            var personToUpdate = await _context.People.FirstOrDefaultAsync(p => p.Id == person.Id);
+            if (personToUpdate == null)
             {
                 throw new InvalidOperationException("Person not found.");
             }
-            _context.Update(person);
+
+            _context.Update(personToUpdate);
             await _context.SaveChangesAsync();
         }
 
@@ -50,6 +51,7 @@ namespace RegistrationApp.Database.Repositories
             {
                 throw new InvalidOperationException("Person not found.");
             }
+
             _context.People.Remove(personToDelete);
             await _context.SaveChangesAsync();
         }

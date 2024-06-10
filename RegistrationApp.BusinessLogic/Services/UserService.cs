@@ -92,10 +92,10 @@ namespace RegistrationApp.BusinessLogic.Services
                 throw new InvalidOperationException("User does not exist.");
             }
 
-            // Check if user has any people added, if so, delete the ProfilePhotos  collection is not null and contains any people
+            // Check if user has any people added, if so, delete the ProfilePhotos
             if (userToDelete.People != null)
             {
-                // Delete associated persons and their photos
+                // Delete associated people and their photos
                 foreach (var person in userToDelete.People)
                 {
                     if (!string.IsNullOrEmpty(person.FilePath))

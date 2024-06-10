@@ -9,6 +9,8 @@ using FluentValidation.AspNetCore;
 using RegistrationApp.Shared.Validators;
 using RegistrationApp.Database.Validators;
 using FluentValidation;
+using Microsoft.Win32;
+using System.ComponentModel.DataAnnotations;
 
 namespace RegistrationApp
 {
@@ -74,9 +76,10 @@ namespace RegistrationApp
 
             builder.Services.AddControllers();
 
-            // Register FluentValidation for automatic validation
+            // Register FluentValidation services with the ASP.NET Core dependency injection container for automatic validation
             builder.Services.AddFluentValidationAutoValidation()
                             .AddFluentValidationClientsideAdapters()
+                            //register all validators from specified assemblies.
                             .AddValidatorsFromAssemblyContaining<PersonDtoValidator>()
                             .AddValidatorsFromAssemblyContaining<PlaceOfResidenceDtoValidator>()
                             .AddValidatorsFromAssemblyContaining<UserDtoValidator>();

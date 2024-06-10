@@ -10,7 +10,7 @@ namespace RegistrationApp.Controllers
     [Route("[controller]")]
     public class UserController : ControllerBase
     {
-        // Private fields to hold service instances
+        // Hold service instances
         private readonly IUserService _userService;
         private readonly IJwtService _jwtService;
 
@@ -25,8 +25,9 @@ namespace RegistrationApp.Controllers
         [HttpPost("SignUp")]
         public async Task<IActionResult> SignUp([FromForm] UserDto userDto)
         {
-            if (!ModelState.IsValid)
+            if (!ModelState.IsValid)//dictionary that contains state of the model and any validation errors
             {
+                // Returns 400 Bad Request response with model state errors
                 return BadRequest(ModelState);
             }
 
@@ -41,6 +42,7 @@ namespace RegistrationApp.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
         [AllowAnonymous]
         [HttpPost("Login")]
         public async Task<IActionResult> Login([FromForm] UserDto userDto)
@@ -48,35 +50,34 @@ namespace RegistrationApp.Controllers
             try
             {
                 var user = await _userService.LoginAsync(userDto.Username, userDto.Password);
+
                 // Generates JWT token for the authenticated user
                 var token = _jwtService.GetJwtToken(user.Id.ToString(), user.Role);
-                //var token = _jwtService.GetJwtToken(user.Id.ToString(), user.Username, user.Role);
+
                 // Returns 200 OK response with user information and token
                 return Ok(new { user, token });
             }
 
             catch (InvalidOperationException ex)
             {
-                // Catches any InvalidOperationException and returns 401 Unauthorized response with exception message
                 return Unauthorized(ex.Message);
             }
         }
 
         [Authorize(Roles = "Admin")]
-        [HttpDelete("DeleteUserById")] /// Move to userControl
+        [HttpDelete("DeleteUserById")]
         public async Task<IActionResult> DeleteUserAsync(Guid userId)
-        //what should be the error catchings? Is the below enought?
         {
             try
             {
                 await _userService.DeleteUserByIdAsync(userId);
+
                 // Returns 200 OK response with success message
                 return Ok("User deleted successfully");
 
             }
             catch (InvalidOperationException ex)
             {
-                // Catches any InvalidOperationException and returns 400 Bad Request response with the exception message
                 return BadRequest(ex.Message);
             }
         }
