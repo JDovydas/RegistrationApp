@@ -25,12 +25,6 @@ namespace RegistrationApp.Controllers
         [HttpPost("SignUp")]
         public async Task<IActionResult> SignUp([FromForm] UserDto userDto)
         {
-            if (!ModelState.IsValid)//dictionary that contains state of the model and any validation errors
-            {
-                // Returns 400 Bad Request response with model state errors
-                return BadRequest(ModelState);
-            }
-
             try
             {
                 var user = await _userService.SignUpAsync(userDto.Username, userDto.Password);
@@ -72,7 +66,6 @@ namespace RegistrationApp.Controllers
             {
                 await _userService.DeleteUserByIdAsync(userId);
 
-                // Returns 200 OK response with success message
                 return Ok("User deleted successfully");
 
             }

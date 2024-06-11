@@ -79,11 +79,14 @@ namespace RegistrationApp
             // Register FluentValidation services with the ASP.NET Core dependency injection container for automatic validation
             builder.Services.AddFluentValidationAutoValidation()
                             .AddFluentValidationClientsideAdapters()
-                            //register all validators from specified assemblies.
+
+                            //Register all validators from specified assemblies.
                             .AddValidatorsFromAssemblyContaining<PersonDtoValidator>()
                             .AddValidatorsFromAssemblyContaining<PlaceOfResidenceDtoValidator>()
-                            .AddValidatorsFromAssemblyContaining<UserDtoValidator>();
-
+                            .AddValidatorsFromAssemblyContaining<UserDtoValidator>()
+                            .AddValidatorsFromAssemblyContaining<PhotoDtoValidator>()
+                            .AddValidatorsFromAssemblyContaining<UpdatePersonDtoValidator>()
+                            .AddValidatorsFromAssemblyContaining<UpdatePlaceOfResidenceDtoValidator>();
 
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 

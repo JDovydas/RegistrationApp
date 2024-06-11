@@ -1,14 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using RegistrationApp.Database.Repositories;
 using RegistrationApp.Database.Repositories.Interfaces;
-using RegistrationApp.Shared.DTOs;
 using RegistrationApp.Shared.Models;
-
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace RegistrationApp.Database.Repositories
 {
@@ -50,9 +42,6 @@ namespace RegistrationApp.Database.Repositories
             }
 
             return placeOfResidence;
-
         }
-
-
     }
 }

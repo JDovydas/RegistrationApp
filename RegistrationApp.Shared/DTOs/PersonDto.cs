@@ -2,7 +2,6 @@
 
 namespace RegistrationApp.Shared.DTOs
 {
-
     public class PersonDto
     {
         public string Name { get; set; }

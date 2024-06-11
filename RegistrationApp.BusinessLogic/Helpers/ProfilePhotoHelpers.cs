@@ -10,32 +10,32 @@ namespace RegistrationApp.BusinessLogic.Helpers
     {
         public static async Task<string> SaveProfilePhotoAsync(IFormFile profilePhoto)
         {
-            if (profilePhoto == null) return null;
+            if (profilePhoto == null)
+            {
+                return null;
+            }
 
             var uploads = Path.Combine(Directory.GetCurrentDirectory(), "uploads");// Get uploads directory path.
             if (!Directory.Exists(uploads))
             {
-                Directory.CreateDirectory(uploads);// Create uploads directory if it does not exist.
-            }
-            // Generates unique file path for profile photo.
-            var filePath = Path.Combine(uploads, Guid.NewGuid().ToString() + Path.GetExtension(profilePhoto.FileName));
-            using (var stream = new FileStream(filePath, FileMode.Create)) // Create a file stream to save profile photo.
-            {
-                await profilePhoto.CopyToAsync(stream); // Copy profile photo to the file stream.
+                Directory.CreateDirectory(uploads);
             }
 
-            // Load saved profile photo using ImageSharp library.
-            using (var image = await Image.LoadAsync<Rgba32>(filePath))
+            var filePath = Path.Combine(uploads, Guid.NewGuid().ToString() + Path.GetExtension(profilePhoto.FileName));
+
+            // Load, resize, and save the image directly from the input stream.
+            using (var image = await Image.LoadAsync<Rgba32>(profilePhoto.OpenReadStream()))
             {
                 image.Mutate(x => x.Resize(new ResizeOptions
                 {
-                    Size = new Size(200, 200), // Resizes image to 200x200 pixels.
-                    Mode = ResizeMode.Stretch //Stretches image to fit specified dimensions.
+                    Size = new Size(200, 200), // Resize image to 200x200 pixels.
+                    Mode = ResizeMode.Stretch // Stretch image to fit specified dimensions.
                 }));
 
-                await image.SaveAsync(filePath); // Save resized image, overwriting original file
+                await image.SaveAsync(filePath);
+
+                return filePath;
             }
-            return filePath;
         }
 
         public static async Task<FileContentResult> GetProfilePhotoAsync(string filePath)

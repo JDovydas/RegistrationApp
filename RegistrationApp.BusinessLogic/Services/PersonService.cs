@@ -61,6 +61,37 @@ namespace RegistrationApp.BusinessLogic.Services
             await _placeOfResidenceRepository.AddPlaceOfResidenceAsync(placeOfResidence);
         }
 
+        public async Task UpdatePersonInformationAsync(Guid personId, Guid userId, UpdatePersonDto personDto, UpdatePlaceOfResidenceDto placeOfResidenceDto, string filePath, DateOnly birthDate)
+        {
+            var person = await _personRepository.GetPersonByIdAsync(personId);
+            if (person == null || person.UserId != userId)
+            {
+                throw new InvalidOperationException("Person not found or unauthorized access.");
+            }
+
+            // Update person properties if they are not null
+            if (!string.IsNullOrEmpty(personDto.Name)) person.Name = personDto.Name;
+            if (!string.IsNullOrEmpty(personDto.LastName)) person.LastName = personDto.LastName;
+            if (!string.IsNullOrEmpty(personDto.Gender)) person.Gender = personDto.Gender;
+            if (birthDate != default) person.BirthDate = birthDate;
+            if (!string.IsNullOrEmpty(personDto.PersonalId)) person.PersonalId = personDto.PersonalId;
+            if (!string.IsNullOrEmpty(personDto.PhoneNumber)) person.PhoneNumber = personDto.PhoneNumber;
+            if (!string.IsNullOrEmpty(personDto.Email)) person.Email = personDto.Email;
+            if (!string.IsNullOrEmpty(filePath)) person.FilePath = filePath;
+
+            await _personRepository.UpdatePersonAsync(person);
+
+            var placeOfResidence = await _placeOfResidenceRepository.GetPlaceOfResidenceByPersonIdAsync(person.Id);
+
+            // Update place of residence properties if they are not null
+            if (!string.IsNullOrEmpty(placeOfResidenceDto.City)) placeOfResidence.City = placeOfResidenceDto.City;
+            if (!string.IsNullOrEmpty(placeOfResidenceDto.Street)) placeOfResidence.Street = placeOfResidenceDto.Street;
+            if (placeOfResidenceDto.HouseNumber.HasValue) placeOfResidence.HouseNumber = placeOfResidenceDto.HouseNumber.Value;
+            if (placeOfResidenceDto.AppartmentNumber.HasValue) placeOfResidence.AppartmentNumber = placeOfResidenceDto.AppartmentNumber.Value;
+
+            await _placeOfResidenceRepository.UpdatePlaceOfResidenceAsync(placeOfResidence);
+        }
+
         public async Task<string> UploadProfilePhotoAsync(IFormFile profilePhoto)
         {
             return await ProfilePhotoHelpers.SaveProfilePhotoAsync(profilePhoto);
@@ -69,76 +100,6 @@ namespace RegistrationApp.BusinessLogic.Services
         public bool ValitateBirthDate(string birthDateString, out DateOnly birthDate)
         {
             return PersonInformationHelpers.TryParseBirthDate(birthDateString, out birthDate);
-        }
-
-        public async Task UpdateNameAsync(Guid userId, Guid personId, string newName)
-        {
-            // Ensure person is available and user owns it
-            await PersonInformationHelpers.EnsureUserOwnsPersonAsync(_personRepository, userId, personId);
-
-            var person = await _personRepository.GetPersonByIdAsync(personId);
-            person.Name = newName;
-            await _personRepository.UpdatePersonAsync(person);
-        }
-
-        public async Task UpdateLastNameAsync(Guid userId, Guid personId, string newLastName)
-        {
-            // Ensure person is available and user owns it
-            await PersonInformationHelpers.EnsureUserOwnsPersonAsync(_personRepository, userId, personId);
-
-            var person = await _personRepository.GetPersonByIdAsync(personId);
-            person.LastName = newLastName;
-            await _personRepository.UpdatePersonAsync(person);
-        }
-
-        public async Task UpdateGenderAsync(Guid userId, Guid personId, string newGender)
-        {
-            // Ensure person is available and user owns it
-            await PersonInformationHelpers.EnsureUserOwnsPersonAsync(_personRepository, userId, personId);
-
-            var person = await _personRepository.GetPersonByIdAsync(personId);
-            person.Gender = newGender;
-            await _personRepository.UpdatePersonAsync(person);
-        }
-
-        public async Task UpdateBirthDateAsync(Guid userId, Guid personId, DateOnly newBirthDate)
-        {
-            // Ensure person is available and user owns it
-            await PersonInformationHelpers.EnsureUserOwnsPersonAsync(_personRepository, userId, personId);
-
-            var person = await _personRepository.GetPersonByIdAsync(personId);
-            person.BirthDate = newBirthDate;
-            await _personRepository.UpdatePersonAsync(person);
-        }
-
-        public async Task UpdateIdNumberAsync(Guid userId, Guid personId, string newPersonalId)
-        {
-            // Ensure person is available and user owns it
-            await PersonInformationHelpers.EnsureUserOwnsPersonAsync(_personRepository, userId, personId);
-
-            var person = await _personRepository.GetPersonByIdAsync(personId);
-            person.PersonalId = newPersonalId;
-            await _personRepository.UpdatePersonAsync(person);
-        }
-
-        public async Task UpdatePhoneNumberAsync(Guid userId, Guid personId, string newPhoneNumber)
-        {
-            // Ensure person is available and user owns it
-            await PersonInformationHelpers.EnsureUserOwnsPersonAsync(_personRepository, userId, personId);
-
-            var person = await _personRepository.GetPersonByIdAsync(personId);
-            person.PhoneNumber = newPhoneNumber;
-            await _personRepository.UpdatePersonAsync(person);
-        }
-
-        public async Task UpdateEmailAsync(Guid userId, Guid personId, string newEmail)
-        {
-            // Ensure person is available and user owns it
-            await PersonInformationHelpers.EnsureUserOwnsPersonAsync(_personRepository, userId, personId);
-
-            var person = await _personRepository.GetPersonByIdAsync(personId);
-            person.Email = newEmail;
-            await _personRepository.UpdatePersonAsync(person);
         }
 
         public async Task UpdatePhotoAsync(Guid userId, Guid personId, IFormFile newProfilePhoto)

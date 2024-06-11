@@ -8,17 +8,20 @@ namespace RegistrationApp.Shared.Validators
         {
             RuleFor(x => x.City)
                 .NotEmpty().WithMessage("City is required.")
-                .Matches("^[a-zA-ZĄČĘĖĮŠŲŪŽąčęėįšųūž \\-]+$").WithMessage("City must contain only letters, spaces and hyphens.");
+                //[a - zA - ZĄČĘĖĮŠŲŪŽąčęėįšųūž] Ensures the city name starts with a letter.
+                //(?: [a - zA - ZĄČĘĖĮŠŲŪŽąčęėįšųūž]+)$ :Allows spaces followed by letters or hyphens in 
+                .Matches("^[a-zA-ZĄČĘĖĮŠŲŪŽąčęėįšųūž]+(?: [a-zA-ZĄČĘĖĮŠŲŪŽąčęėįšųūž]+)*$").WithMessage("City must contain only letters and spaces. Spaced are allowed between words only.");
 
             RuleFor(x => x.Street)
                 .NotEmpty().WithMessage("Street is required.")
-                .Matches("^[a-zA-ZĄČĘĖĮŠŲŪŽąčęėįšųūž \\-]+$").WithMessage("Street must be valid.");
+                .Matches("^[a-zA-ZĄČĘĖĮŠŲŪŽąčęėįšųūž]+(?: [a-zA-ZĄČĘĖĮŠŲŪŽąčęėįšųūž]+)*$").WithMessage("Street must contain only letters and spaces. Spaced are allowed between words only.");
 
             RuleFor(x => x.HouseNumber)
                 .GreaterThan(0).WithMessage("House Number must be a positive integer.");
 
             RuleFor(x => x.AppartmentNumber)
-                .GreaterThanOrEqualTo(0).When(x => x.AppartmentNumber.HasValue).WithMessage("Apartment Number must be a number.");
+                //.GreaterThan(0).When(x => x.AppartmentNumber.HasValue).WithMessage("Apartment Number must be a number.");
+                .GreaterThan(0).WithMessage("Apartment Number must be a number.");
         }
     }
 }
