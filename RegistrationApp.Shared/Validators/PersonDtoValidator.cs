@@ -123,8 +123,6 @@ namespace RegistrationApp.Shared.Validators
             const int maxSizeInBytes = 5 * 1024 * 1024; // 5MB in bytes
             return profilePhoto.Length <= maxSizeInBytes;
         }
-
-
     }
 }
 
