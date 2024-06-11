@@ -7,10 +7,7 @@ namespace DatabaseTest
 {
     public class PlaceOfResidenceRepositoryTests
     {
-        // In-memory database context
         private readonly RegistrationAppContext _context;
-
-        // Repository to be tested
         private readonly PlaceOfResidenceRepository _placeOfResidenceRepository;
 
         // Constructor to set up the in-memory database and repository for testing
@@ -23,7 +20,7 @@ namespace DatabaseTest
             _context = new RegistrationAppContext(options); // Initialize the database context with the in-memory options
             _placeOfResidenceRepository = new PlaceOfResidenceRepository(_context); // Initialize the repository with the context
 
-            // Seed the database with a test place of residence
+            // Seed the database with test data
             _context.PlacesOfResidence.Add(new PlaceOfResidence
             {
                 Id = Guid.NewGuid(),

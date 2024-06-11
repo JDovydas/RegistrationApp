@@ -9,9 +9,9 @@ namespace BusinessLogicTest
     public class PersonServiceTests
     {
         //Mocking
-        private readonly Mock<IPersonRepository> _personRepositoryMock;
-        private readonly Mock<IUserRepository> _userRepositoryMock;
-        private readonly Mock<IPlaceOfResidenceRepository> _placeOfResidenceRepositoryMock;
+        private readonly Mock<IPersonRepository> _mockPersonRepository;
+        private readonly Mock<IUserRepository> _mockUserRepository;
+        private readonly Mock<IPlaceOfResidenceRepository> _mockPlaceOfResidenceRepository;
 
         //Instance
         private readonly PersonService _personService;
@@ -19,10 +19,10 @@ namespace BusinessLogicTest
         //Constructor for PersonServiceTests class - sets up mocks and service instance for tests
         public PersonServiceTests()
         {
-            _personRepositoryMock = new Mock<IPersonRepository>();
-            _userRepositoryMock = new Mock<IUserRepository>();
-            _placeOfResidenceRepositoryMock = new Mock<IPlaceOfResidenceRepository>();
-            _personService = new PersonService(_personRepositoryMock.Object, _userRepositoryMock.Object, _placeOfResidenceRepositoryMock.Object); //Passe the mock object of the interface as a dependency.
+            _mockPersonRepository = new Mock<IPersonRepository>();
+            _mockUserRepository = new Mock<IUserRepository>();
+            _mockPlaceOfResidenceRepository = new Mock<IPlaceOfResidenceRepository>();
+            _personService = new PersonService(_mockPersonRepository.Object, _mockUserRepository.Object, _mockPlaceOfResidenceRepository.Object); //Pass  mock objects of  interfaces as a dependency.
         }
 
         [Fact]
@@ -53,7 +53,7 @@ namespace BusinessLogicTest
             };
 
             // Mocking GetUserByIdAsync to return created user
-            _userRepositoryMock.Setup(repo => repo.GetUserByIdAsync(userId)).ReturnsAsync(user);
+            _mockUserRepository.Setup(repo => repo.GetUserByIdAsync(userId)).ReturnsAsync(user);
 
             // Act
             // Call AddPersonInformationAsync method to add person information
@@ -61,9 +61,9 @@ namespace BusinessLogicTest
 
             // Assert
             // Verifying person repository was called exactly once with any Person object.
-            _personRepositoryMock.Verify(repo => repo.AddPersonAsync(It.IsAny<Person>()), Times.Once);
+            _mockPersonRepository.Verify(repo => repo.AddPersonAsync(It.IsAny<Person>()), Times.Once);
             // Verifying place of residence repository was called exactly once with any PlaceOfResidence object
-            _placeOfResidenceRepositoryMock.Verify(repo => repo.AddPlaceOfResidenceAsync(It.IsAny<PlaceOfResidence>()), Times.Once);
+            _mockPlaceOfResidenceRepository.Verify(repo => repo.AddPlaceOfResidenceAsync(It.IsAny<PlaceOfResidence>()), Times.Once);
         }
 
         [Fact]
@@ -75,11 +75,11 @@ namespace BusinessLogicTest
             var placeOfResidenceDto = new PlaceOfResidenceDto();
             var birthDate = DateOnly.Parse("1980-01-01");
 
-            // Set up user repository mock to return null when GetUserByIdAsync is called with generated user ID
-            _userRepositoryMock.Setup(repo => repo.GetUserByIdAsync(userId)).ReturnsAsync((User)null);
+            // Mocking GetUserByIdAsync to return null
+            _mockUserRepository.Setup(repo => repo.GetUserByIdAsync(userId)).ReturnsAsync((User)null);
 
             // Act & Assert
-            // Assert AddPersonInformationAsync method throws an InvalidOperationException
+            // Assert throws InvalidOperationException
             await Assert.ThrowsAsync<InvalidOperationException>(() =>
                 _personService.AddPersonInformationAsync(userId, personDto, placeOfResidenceDto, null, birthDate));
         }

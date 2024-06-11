@@ -7,10 +7,7 @@ namespace DatabaseTest
 {
     public class PersonRepositoryTests
     {
-        // In-memory database context
         private readonly RegistrationAppContext _context;
-
-        // Repository to be tested
         private readonly PersonRepository _personRepository;
 
         // Constructor to set up the in-memory database and repository for testing

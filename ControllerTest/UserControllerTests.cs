@@ -10,17 +10,17 @@ namespace ControllerTest
     public class UserControllerTests
     {
         // Mock objects for IUserService and IJwtService interfaces
-        private readonly Mock<IUserService> _userServiceMock;
-        private readonly Mock<IJwtService> _jwtServiceMock;
+        private readonly Mock<IUserService> _mockUserService;
+        private readonly Mock<IJwtService> _mockJwtServiceMock;
         // Instance of UserController class which will be tested
         private readonly UserController _controller;
 
         // Constructor to set up mocks and controller instance for tests
         public UserControllerTests()
         {
-            _userServiceMock = new Mock<IUserService>();
-            _jwtServiceMock = new Mock<IJwtService>();
-            _controller = new UserController(_userServiceMock.Object, _jwtServiceMock.Object);
+            _mockUserService = new Mock<IUserService>();
+            _mockJwtServiceMock = new Mock<IJwtService>();
+            _controller = new UserController(_mockUserService.Object, _mockJwtServiceMock.Object);
         }
 
         [Fact]
@@ -34,7 +34,7 @@ namespace ControllerTest
             };
 
             // Mocking the SignUpAsync method to return new User object
-            _userServiceMock.Setup(service => service.SignUpAsync(userDto.Username, userDto.Password)).ReturnsAsync(new User { Username = userDto.Username });
+            _mockUserService.Setup(service => service.SignUpAsync(userDto.Username, userDto.Password)).ReturnsAsync(new User { Username = userDto.Username });
 
             // Act
             var result = await _controller.SignUp(userDto);
@@ -51,7 +51,7 @@ namespace ControllerTest
             var userId = Guid.NewGuid();
 
             // Mocking DeleteUserByIdAsync method to complete successfully
-            _userServiceMock.Setup(service => service.DeleteUserByIdAsync(userId)).Returns(Task.CompletedTask);
+            _mockUserService.Setup(service => service.DeleteUserByIdAsync(userId)).Returns(Task.CompletedTask);
 
             // Act
             var result = await _controller.DeleteUserAsync(userId);
@@ -68,7 +68,7 @@ namespace ControllerTest
             var userId = Guid.NewGuid();
 
             // Mocking DeleteUserByIdAsync method to throw InvalidOperationException
-            _userServiceMock.Setup(service => service.DeleteUserByIdAsync(userId)).ThrowsAsync(new InvalidOperationException("User not found."));
+            _mockUserService.Setup(service => service.DeleteUserByIdAsync(userId)).ThrowsAsync(new InvalidOperationException("User not found."));
 
             // Act
             var result = await _controller.DeleteUserAsync(userId);
