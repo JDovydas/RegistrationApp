@@ -10,7 +10,7 @@ namespace RegistrationApp.Controllers
     [Route("[controller]")]
     public class UserController : ControllerBase
     {
-        // Hold service instances
+        // Service instances
         private readonly IUserService _userService;
         private readonly IJwtService _jwtService;
 

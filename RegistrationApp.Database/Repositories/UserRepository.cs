@@ -58,6 +58,5 @@ namespace RegistrationApp.Database.Repositories
             await _context.SaveChangesAsync();
 
         }
-
     }
 }

@@ -1,7 +1,6 @@
 ﻿using FluentValidation; //.NET library for building strongly-typed validation rules. Creates validation rules for classes, usually DTOs or models. 
 using Microsoft.AspNetCore.Http;
 using RegistrationApp.Shared.DTOs;
-using System.Text.RegularExpressions;
 
 namespace RegistrationApp.Shared.Validators
 {

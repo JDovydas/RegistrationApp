@@ -49,7 +49,7 @@ namespace RegistrationApp.BusinessLogic.Helpers
             byte[] fileBytes = await System.IO.File.ReadAllBytesAsync(filePath); //reads all bytes from file at specified filePath.
 
             //Creates new instance of FileContentResult with byte array(fileBytes) and type ("image/jpeg").
-            //FileContentResult used to return a file as the response content, which can then be used to send file data in HTTP response
+            //FileContentResult - return a file as the response content, which can then be used to send file data in HTTP response
             return new FileContentResult(fileBytes, "image/jpeg");
         }
 

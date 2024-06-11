@@ -29,7 +29,7 @@ namespace RegistrationApp.Database.Repositories
                 throw new InvalidOperationException("Place of residence not found.");
             }
 
-            _context.Update(placeOfResidence);
+            _context.PlacesOfResidence.Update(placeOfResidence);
             await _context.SaveChangesAsync();
         }
 

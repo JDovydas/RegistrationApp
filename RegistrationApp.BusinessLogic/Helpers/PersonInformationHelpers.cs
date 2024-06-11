@@ -4,7 +4,7 @@ namespace RegistrationApp.BusinessLogic.Helpers
 {
     public class PersonInformationHelpers
     {
-        // Parse birthdate string into DateOnly object
+        // Parse string => DateOnly 
         public static bool TryParseBirthDate(string birthDateString, out DateOnly birthDate)
         {
             return DateOnly.TryParseExact(birthDateString, "yyyy-MM-dd", out birthDate);
