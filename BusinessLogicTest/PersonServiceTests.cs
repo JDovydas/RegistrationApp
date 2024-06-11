@@ -8,15 +8,15 @@ namespace BusinessLogicTest
 {
     public class PersonServiceTests
     {
-        //mock objects for interfaces
+        //Mocking
         private readonly Mock<IPersonRepository> _personRepositoryMock;
         private readonly Mock<IUserRepository> _userRepositoryMock;
         private readonly Mock<IPlaceOfResidenceRepository> _placeOfResidenceRepositoryMock;
 
-        //instance of PersonService class which will be tested
+        //Instance
         private readonly PersonService _personService;
 
-        //constructor for PersonServiceTests class - sets up mocks and service instance for tests
+        //Constructor for PersonServiceTests class - sets up mocks and service instance for tests
         public PersonServiceTests()
         {
             _personRepositoryMock = new Mock<IPersonRepository>();

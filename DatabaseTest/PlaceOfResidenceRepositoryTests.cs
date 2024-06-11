@@ -96,11 +96,12 @@ namespace DatabaseTest
             // Arrange
             var placeOfResidence = await _context.PlacesOfResidence.FirstOrDefaultAsync();
 
+            //Act
             _context.PlacesOfResidence.Remove(placeOfResidence);
             await _context.SaveChangesAsync();
-
             var deletedPlaceOfResidence = await _context.PlacesOfResidence.FirstOrDefaultAsync(p => p.Id == placeOfResidence.Id);
 
+            //Assert
             Assert.Null(deletedPlaceOfResidence);
         }
     }
