@@ -10,32 +10,40 @@ namespace RegistrationApp.Shared.Validators
         {
             RuleFor(x => x.Name)
                 .Matches("^[a-zA-ZĄČĘĖĮŠŲŪŽąčęėįšųūž]+$").WithMessage("Name must contain only letters.")
-                .Length(2, 50).WithMessage("Name must be between 2 and 50 characters.");
+                .Length(2, 50).WithMessage("Name must be between 2 and 50 characters.")
+                .When(x => !string.IsNullOrEmpty(x.Name));
 
             RuleFor(x => x.LastName)
                 .Matches("^[a-zA-ZĄČĘĖĮŠŲŪŽąčęėįšųūž]+$").WithMessage("Last Name must contain only letters.")
-                .Length(2, 50).WithMessage("Last Name must be between 2 and 50 characters.");
+                .Length(2, 50).WithMessage("Last Name must be between 2 and 50 characters.")
+                .When(x => !string.IsNullOrEmpty(x.LastName));
 
             RuleFor(x => x.Gender)
-                .Matches("^[a-zA-ZĄČĘĖĮŠŲŪŽąčęėįšųūž]+$").WithMessage("Gender must contain only letters.");
+                .Matches("^[a-zA-ZĄČĘĖĮŠŲŪŽąčęėįšųūž]+$").WithMessage("Gender must contain only letters.")
+                .When(x => !string.IsNullOrEmpty(x.Gender));
 
             RuleFor(x => x.BirthDate)
                 .Must(BeAValidDate).WithMessage("Invalid date format for BirthDate. Please use YYYY-MM-DD.")
-                .Must(BeAValidAge).WithMessage("BirthDate cannot be in the future and must be within the last 120 years.");
+                .Must(BeAValidAge).WithMessage("BirthDate cannot be in the future and must be within the last 120 years.")
+                .When(x => !string.IsNullOrEmpty(x.BirthDate));
 
             RuleFor(x => x.PersonalId)
                 .Matches(@"^\d{11}$").WithMessage("Personal Identification Code must be 11 digits long.")
-                .Must(BeAValidpPersonalId).WithMessage("Personal Identification Code is invalid.");
+                .Must(BeAValidpPersonalId).WithMessage("Personal Identification Code is invalid.")
+                .When(x => !string.IsNullOrEmpty(x.PersonalId));
 
             RuleFor(x => x.PhoneNumber)
-                .Matches(@"^(?:\+3706\d{7}|06\d{7})$").WithMessage("Phone Number must be in the format +3706XXXXXXX or 06XXXXXXX.");
+                .Matches(@"^(?:\+3706\d{7}|06\d{7})$").WithMessage("Phone Number must be in the format +3706XXXXXXX or 06XXXXXXX.")
+                .When(x => !string.IsNullOrEmpty(x.PhoneNumber));
 
             RuleFor(x => x.Email)
-                .EmailAddress().WithMessage("Invalid email format.");
+                .EmailAddress().WithMessage("Invalid email format.")
+                .When(x => !string.IsNullOrEmpty(x.Email));
 
             RuleFor(x => x.ProfilePhoto)
                 .Must(BeAValidProfilePhoto).WithMessage("Profile photo must be a valid image file.")
-                .Must(BeAValidSize).WithMessage("Profile photo must not exceed 5MB.");
+                .Must(BeAValidSize).WithMessage("Profile photo must not exceed 5MB.")
+                .When(x => x.ProfilePhoto != null);
 
         }
 

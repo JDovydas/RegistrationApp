@@ -11,15 +11,19 @@ namespace RegistrationApp.Shared.Validators
                 .Matches("^[a-zA-ZĄČĘĖĮŠŲŪŽąčęėįšųūž]+(?: [a-zA-ZĄČĘĖĮŠŲŪŽąčęėįšųūž]+)*$").WithMessage("City must contain only letters and spaces. Space is allowed between words only.")
                 .When(x => !string.IsNullOrEmpty(x.City));
 
+
             RuleFor(x => x.Street)
                 .Matches("^[a-zA-ZĄČĘĖĮŠŲŪŽąčęėįšųūž]+(?: [a-zA-ZĄČĘĖĮŠŲŪŽąčęėįšųūž]+)*$").WithMessage("Street must contain only letters and spaces. Space is allowed between words only.")
                 .When(x => !string.IsNullOrEmpty(x.Street));
 
+
             RuleFor(x => x.HouseNumber)
-                .GreaterThan(0).WithMessage("House Number must be a positive integer.");
+                .GreaterThan(0).WithMessage("House Number must be a positive integer.")
+                .When(x => x.HouseNumber.HasValue);
 
             RuleFor(x => x.AppartmentNumber)
-                .GreaterThan(0).WithMessage("Apartment Number must be a number.");
+                .GreaterThan(0).WithMessage("Apartment Number must be a number.")
+                .When(x => x.AppartmentNumber.HasValue);
         }
     }
 }

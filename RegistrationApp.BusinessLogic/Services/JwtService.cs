@@ -11,7 +11,7 @@ namespace RegistrationApp.BusinessLogic.Services
         // Configuration to read settings from appsettings.json
         private readonly IConfiguration _configuration;
 
-        // Constructor accepts IConfiguration object to initialize _configuration field
+        // Constructor accepts IConfiguration object to initialize _configuration
         public JwtService(IConfiguration configuration)
         {
             _configuration = configuration;

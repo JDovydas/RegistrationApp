@@ -10,6 +10,7 @@ namespace RegistrationApp.Shared.Validators
                 .NotEmpty().WithMessage("City is required.")
                 .Matches("^[a-zA-ZĄČĘĖĮŠŲŪŽąčęėįšųūž]+(?: [a-zA-ZĄČĘĖĮŠŲŪŽąčęėįšųūž]+)*$").WithMessage("City must contain only letters and spaces. Space is allowed between words only.");
 
+
             RuleFor(x => x.Street)
                 .NotEmpty().WithMessage("Street is required.")
                 .Matches("^[a-zA-ZĄČĘĖĮŠŲŪŽąčęėįšųūž]+(?: [a-zA-ZĄČĘĖĮŠŲŪŽąčęėįšųūž]+)*$").WithMessage("Street must contain only letters and spaces. Space is allowed between words only.");
