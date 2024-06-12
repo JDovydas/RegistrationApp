@@ -1,4 +1,5 @@
-﻿using RegistrationApp.BusinessLogic.Helpers;
+﻿using Microsoft.EntityFrameworkCore;
+using RegistrationApp.BusinessLogic.Helpers;
 using RegistrationApp.BusinessLogic.Services.Interfaces;
 using RegistrationApp.Database.Repositories;
 using RegistrationApp.Database.Repositories.Interfaces;
@@ -9,13 +10,14 @@ namespace RegistrationApp.BusinessLogic.Services
 {
     public class UserService : IUserService
     {
-        // Dependency on IUserRepository
         private readonly IUserRepository _userRepository;
+        private readonly IPersonRepository _personRepository;
 
         // Constructor to inject IUserRepository dependency
-        public UserService(IUserRepository userRepository)
+        public UserService(IUserRepository userRepository, IPersonRepository personRepository)
         {
             _userRepository = userRepository;
+            _personRepository = personRepository;
         }
         public async Task<User> SignUpAsync(string username, string password)
         {
@@ -72,7 +74,7 @@ namespace RegistrationApp.BusinessLogic.Services
 
         private bool VerifyPasswordHash(string password, byte[] passwordHash, byte[] passwordSalt)
         {
-            // Initialize new instance of the HMACSHA512 cryptographic algorithm with the provided salt (key)
+            // Initialize new instance of HMACSHA512 cryptographic algorithm with provided salt (key)
             using var hmac = new HMACSHA512(passwordSalt);
 
             // Convert password string to byte array using UTF-8 encoding
@@ -92,16 +94,15 @@ namespace RegistrationApp.BusinessLogic.Services
                 throw new InvalidOperationException("User does not exist.");
             }
 
-            // Check if user has any people added, if so, delete the ProfilePhotos
-            if (userToDelete.People != null)
+            // Retrieve all people associated with the user
+            var peopleToDelete = await _personRepository.GetPeopleByUserIdAsync(userId);
+
+            // Delete associated people photos from System
+            foreach (var person in peopleToDelete)
             {
-                // Delete associated people and their photos
-                foreach (var person in userToDelete.People)
+                if (!string.IsNullOrEmpty(person.FilePath))
                 {
-                    if (!string.IsNullOrEmpty(person.FilePath))
-                    {
-                        ProfilePhotoHelpers.DeleteProfilePhoto(person.FilePath);
-                    }
+                    ProfilePhotoHelpers.DeleteProfilePhoto(person.FilePath);
                 }
             }
             await _userRepository.DeleteUserAsync(userToDelete);

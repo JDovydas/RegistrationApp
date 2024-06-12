@@ -27,11 +27,6 @@ namespace RegistrationApp.Database.Repositories
         public async Task<User> GetUserByUsernameAsync(string username)
         {
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == username);
-            if (user == null)
-            {
-                throw new InvalidOperationException("User not found.");
-            }
-
             return user;
         }
 

@@ -11,7 +11,6 @@ namespace RegistrationApp.Controllers
     [Route("[controller]/[action]")]
     public class PersonInformationController : ControllerBase
     {
-        // Service instance
         private readonly IPersonService _personService;
 
         // Constructor - initializes service via dependency injection

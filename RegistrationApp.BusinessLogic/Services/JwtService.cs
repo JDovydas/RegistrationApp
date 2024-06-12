@@ -25,11 +25,11 @@ namespace RegistrationApp.BusinessLogic.Services
                 new Claim(ClaimTypes.Role, role)
             };
 
-            // Retrieve  secret key for signing token from the configuration
-            var secretToken = _configuration.GetSection("Jwt:Key").Value;
+            // Retrieve secret key for signing token from the configuration
+            var secretKey = _configuration.GetSection("Jwt:Key").Value;
 
             // Convert secret key to byte array and create SymmetricSecurityKey
-            var key = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(secretToken));
+            var key = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(secretKey));
 
             // Create signing credentials using symmetric key and HMAC-SHA512 algorithm
             var cred = new SigningCredentials(key, SecurityAlgorithms.HmacSha512);

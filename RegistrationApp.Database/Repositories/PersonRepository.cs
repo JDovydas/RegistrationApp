@@ -6,7 +6,6 @@ namespace RegistrationApp.Database.Repositories
 {
     public class PersonRepository : IPersonRepository
     {
-        // Database context for accessing database
         private readonly RegistrationAppContext _context;
 
         // Constructor to inject database context
@@ -54,6 +53,11 @@ namespace RegistrationApp.Database.Repositories
 
             _context.People.Remove(personToDelete);
             await _context.SaveChangesAsync();
+        }
+
+        public async Task<List<Person>> GetPeopleByUserIdAsync(Guid userId)
+        {
+            return await _context.People.Where(p => p.UserId == userId).ToListAsync();
         }
     }
 }

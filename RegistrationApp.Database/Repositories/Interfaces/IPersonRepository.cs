@@ -8,5 +8,6 @@ namespace RegistrationApp.Database.Repositories.Interfaces
         Task<Person> GetPersonByIdAsync(Guid personId);
         Task UpdatePersonAsync(Person person);
         Task DeletePersonAsync(Person person);
+        Task<List<Person>> GetPeopleByUserIdAsync(Guid userId);
     }
 }

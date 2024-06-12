@@ -10,7 +10,6 @@ namespace RegistrationApp.Controllers
     [Route("[controller]")]
     public class UserController : ControllerBase
     {
-        // Service instances
         private readonly IUserService _userService;
         private readonly IJwtService _jwtService;
 
@@ -48,8 +47,8 @@ namespace RegistrationApp.Controllers
                 // Generates JWT token for the authenticated user
                 var token = _jwtService.GetJwtToken(user.Id.ToString(), user.Role);
 
-                // Returns 200 OK response with user information and token
-                return Ok(new { user, token });
+                // Returns 200 OK response with token
+                return Ok(token);
             }
 
             catch (InvalidOperationException ex)

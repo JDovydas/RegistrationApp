@@ -20,7 +20,8 @@ namespace RegistrationApp.Shared.Validators
                 .GreaterThan(0).WithMessage("House Number must be a positive integer.");
 
             RuleFor(x => x.AppartmentNumber)
-                .GreaterThan(0).WithMessage("Apartment Number must be a number.");
+                .GreaterThan(0).WithMessage("Apartment Number must be a number.")
+                .When(x => x.AppartmentNumber.HasValue);
         }
     }
 }

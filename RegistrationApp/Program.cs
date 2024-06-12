@@ -27,7 +27,7 @@ namespace RegistrationApp
             // Register business logic services
             builder.Services.AddBusinessLogicServices();
 
-            // Configure JWT authentication
+            // Add authentication services and configure the application to use JWT tokens for authentication
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
             {
                 options.TokenValidationParameters = new TokenValidationParameters
@@ -47,6 +47,7 @@ namespace RegistrationApp
             builder.Services.AddSwaggerGen(options =>
             {
                 options.SwaggerDoc("v1", new OpenApiInfo { Title = "JWT APP", Version = "v1" });
+                //Add security definition to Swagger to use the "Bearer" scheme
                 options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
                     In = ParameterLocation.Header,
@@ -56,6 +57,7 @@ namespace RegistrationApp
                     BearerFormat = "JWT",
                     Scheme = "Bearer"
                 });
+                //Specify that "Bearer" scheme must be used for accessing API
                 options.AddSecurityRequirement(new OpenApiSecurityRequirement
                    {
                        {
