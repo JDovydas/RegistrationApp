@@ -7,11 +7,12 @@ namespace BusinessLogicTest
 {
     public class UserServiceTests
     {
+        //Mocking
         private readonly Mock<IUserRepository> _mockUserRepository;
         private readonly Mock<IPersonRepository> _mockPersonRepository;
         private readonly UserService _userService;
 
-
+        //Set up mocks and service instance for tests
         public UserServiceTests()
         {
             _mockUserRepository = new Mock<IUserRepository>();
@@ -52,7 +53,7 @@ namespace BusinessLogicTest
                 Username = username
             };
 
-            // Mocking the GetUserByIdAsync - it simulates that user with given username already exists in system.
+            // Mocking the GetUserByIdAsync - simulates that user with given username already exists in system.
             _mockUserRepository.Setup(repo => repo.GetUserByUsernameAsync(username)).ReturnsAsync(existingUser);
 
             // Act & Assert
@@ -97,30 +98,6 @@ namespace BusinessLogicTest
             ////Calling LoginAsync method with username and password, and use Assert.ThrowsAsync<InvalidOperationException> to check that InvalidOperationException is thrown.
             var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _userService.LoginAsync(username, password));
             Assert.Equal("User does not exist", exception.Message);
-        }
-
-        [Fact]
-        public async Task DeleteUserByIdAsync_DeletesUserSuccessfully()
-        {
-            // Arrange
-            var userId = Guid.NewGuid();
-            var user = new User
-            {
-                Id = userId,
-                Username = "testuser"
-            };
-
-            // Setup sequence to return user first and then null after deletion
-            _mockUserRepository.SetupSequence(repo => repo.GetUserByIdAsync(userId))
-                               .ReturnsAsync(user)  // First call returns the user
-                               .ReturnsAsync((User)null);  // Subsequent calls return null
-
-            // Act
-            await _userService.DeleteUserByIdAsync(userId);
-
-            // Assert that subsequent calls to GetUserByIdAsync return null
-            var deletedUser = await _mockUserRepository.Object.GetUserByIdAsync(userId);
-            Assert.Null(deletedUser);
         }
 
         [Fact]

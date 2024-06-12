@@ -9,10 +9,8 @@ namespace ControllerTest
 {
     public class UserControllerTests
     {
-        // Mock objects for IUserService and IJwtService interfaces
         private readonly Mock<IUserService> _mockUserService;
         private readonly Mock<IJwtService> _mockJwtServiceMock;
-        // Instance of UserController class which will be tested
         private readonly UserController _controller;
 
         // Constructor to set up mocks and controller instance for tests

@@ -94,10 +94,9 @@ namespace RegistrationApp.BusinessLogic.Services
                 throw new InvalidOperationException("User does not exist.");
             }
 
-            // Retrieve all people associated with the user
             var peopleToDelete = await _personRepository.GetPeopleByUserIdAsync(userId);
 
-            // Delete associated people photos from System
+            // Delete associated people's photos from System
             foreach (var person in peopleToDelete)
             {
                 if (!string.IsNullOrEmpty(person.FilePath))

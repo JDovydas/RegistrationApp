@@ -16,7 +16,7 @@ namespace BusinessLogicTest
         //Instance
         private readonly PersonService _personService;
 
-        //Constructor for PersonServiceTests class - sets up mocks and service instance for tests
+        //Set up mocks and service instance for tests
         public PersonServiceTests()
         {
             _mockPersonRepository = new Mock<IPersonRepository>();

@@ -13,7 +13,6 @@ namespace RegistrationApp.Controllers
         private readonly IUserService _userService;
         private readonly IJwtService _jwtService;
 
-        // Constructor - initializes services via dependency injection
         public UserController(IUserService userService, IJwtService jwtService)
         {
             _userService = userService;
