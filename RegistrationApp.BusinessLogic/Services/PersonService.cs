@@ -77,7 +77,15 @@ namespace RegistrationApp.BusinessLogic.Services
             if (!string.IsNullOrEmpty(personDto.PersonalId)) person.PersonalId = personDto.PersonalId;
             if (!string.IsNullOrEmpty(personDto.PhoneNumber)) person.PhoneNumber = personDto.PhoneNumber;
             if (!string.IsNullOrEmpty(personDto.Email)) person.Email = personDto.Email;
-            if (!string.IsNullOrEmpty(filePath)) person.FilePath = filePath;
+            if (!string.IsNullOrEmpty(filePath))
+            {
+                // Delete the old photo if it exists
+                if (!string.IsNullOrEmpty(person.FilePath))
+                {
+                    ProfilePhotoHelpers.DeleteProfilePhoto(person.FilePath);
+                }
+                person.FilePath = filePath;
+            }
 
             await _personRepository.UpdatePersonAsync(person);
 

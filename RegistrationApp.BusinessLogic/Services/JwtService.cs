@@ -8,10 +8,9 @@ namespace RegistrationApp.BusinessLogic.Services
 {
     public class JwtService : IJwtService
     {
-        // Configuration to read settings from appsettings.json
+        // read settings from appsettings.json
         private readonly IConfiguration _configuration;
 
-        // Constructor accepts IConfiguration object to initialize _configuration
         public JwtService(IConfiguration configuration)
         {
             _configuration = configuration;

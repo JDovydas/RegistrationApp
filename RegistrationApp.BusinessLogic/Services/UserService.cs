@@ -13,7 +13,6 @@ namespace RegistrationApp.BusinessLogic.Services
         private readonly IUserRepository _userRepository;
         private readonly IPersonRepository _personRepository;
 
-        // Constructor to inject IUserRepository dependency
         public UserService(IUserRepository userRepository, IPersonRepository personRepository)
         {
             _userRepository = userRepository;

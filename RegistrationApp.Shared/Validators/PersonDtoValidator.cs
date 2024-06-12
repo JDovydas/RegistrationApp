@@ -4,7 +4,7 @@ using RegistrationApp.Shared.DTOs;
 
 namespace RegistrationApp.Shared.Validators
 {
-    public class PersonDtoValidator : AbstractValidator<PersonDto> //Validators defined for DTO ingeriting "AbstractValidator".
+    public class PersonDtoValidator : AbstractValidator<PersonDto>
     {
         public PersonDtoValidator()
         {
